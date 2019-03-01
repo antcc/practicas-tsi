@@ -1,4 +1,4 @@
-# ignore everything
+# ignore everything but src/practica_busqueda/Agent.java and a few files
 /*
 !.gitignore
 !README.md
@@ -7,3 +7,5 @@
 !src/
 src/*
 !src/practica_busqueda/
+src/practica_busqueda/*
+!src/practica_busqueda/Agent.java
