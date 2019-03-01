@@ -1,5 +1,9 @@
 # ignore everything
-*
+/*
+!.gitignore
+!README.md
+!LICENSE
 
-# except this folder
-!src/practica_busqueda/*
+!src/
+src/*
+!src/practica_busqueda/
