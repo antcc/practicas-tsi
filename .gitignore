@@ -3,6 +3,7 @@
 !.gitignore
 !README.md
 !LICENSE
+!memoria.md
 
 !src/
 src/*
