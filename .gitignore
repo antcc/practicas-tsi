@@ -4,6 +4,7 @@
 !README.md
 !LICENSE
 !memoria.md
+!Makefile
 
 !src/
 src/*
