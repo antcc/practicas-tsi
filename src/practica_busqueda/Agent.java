@@ -104,7 +104,7 @@ private Types.ACTIONS actRandom(StateObservation stateObs, ElapsedCpuTimer elaps
         // Update path
         if (path.isEmpty()) {
             // Look for the exit (all gems collected)
-            if (gems == NUM_GEMS_FOR_EXIT + 1) {
+            if (gems == NUM_GEMS_FOR_EXIT) {
                 // Select nearest exit
                 ArrayList<core.game.Observation>[] exitList
                         = stateObs.getPortalsPositions(stateObs.getAvatarPosition());
