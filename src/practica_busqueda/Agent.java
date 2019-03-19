@@ -23,7 +23,7 @@ public class Agent extends BaseAgent {
   // Basic A* agent
   private PathFinder pf;
   private ArrayList<Node> path = new ArrayList<>();
-  private PlayerObservation ultimaPos;
+  private Vector2d ultimaPos;
 
   public Agent(StateObservation so, ElapsedCpuTimer elapsedTimer) {
     super(so, elapsedTimer);
@@ -39,28 +39,41 @@ public class Agent extends BaseAgent {
     pf.run(so);
 
     // Get last known position
-    ultimaPos = getPlayer(so);
+    PlayerObservation player = getPlayer(so);
+    ultimaPos = new Vector2d(player.getX(), player.getY());
   }
 
-  /*  public boolean shouldEscape(StateObservation stateObs){
-      System.out.println("Peligro");
-      Node next = path.get(0);
+  /**
+   * Indica si el jugador está en una situación de peligro en el camino actual
+   * @// FIXME: 19/03/19 Comprobar también monstruos cercanos?
+   * @param stateObs
+   * @return Si está en peligro
+   */
+  public boolean shouldEscape(StateObservation stateObs){
+      Vector2d siguientePos = path.get(0).position;
       StateObservation newStateObs = stateObs.copy();
-      newStateObs.advance(getAction(ultimaPos,next));
+      newStateObs.advance(getAction(ultimaPos,siguientePos));
       return !newStateObs.isAvatarAlive();
   }
 
+  /**
+   * Escapa de una situación de peligro
+   * @param stateObs El estado actual
+   * @return La acción para evitar el peligro
+   */
   public Types.ACTIONS escape(StateObservation stateObs){
 
-    for (Node vecino : pf.getNeighbours(ultimaPos)){
+    for (Node vecino : pf.getNeighbours(new Node(ultimaPos))){
       StateObservation newStateObs = stateObs.copy();
-      Types.ACTIONS action = getAction(ultimaPos, vecino);
+      Types.ACTIONS action = getAction(ultimaPos, vecino.position);
       newStateObs.advance(action);
-      if(newStateObs.isAvatarAlive())
+      if(newStateObs.isAvatarAlive()) {
+        path = new ArrayList<>();
         return action;
+      }
     }
     return Types.ACTIONS.ACTION_NIL;
-  }*/
+  }
 
   /**
    * *********************************************
@@ -74,16 +87,16 @@ public class Agent extends BaseAgent {
    * @param to the destination node
    * @return the action to get from `from.position` to `to.position`.
    */
-  private Types.ACTIONS getAction(Node from, Node to){
-    if(to.position.x != from.position.x) {
-      if (to.position.x > from.position.x) {
+  private Types.ACTIONS getAction(Vector2d from, Vector2d to){
+    if(to.x != from.x) {
+      if (to.x > from.x) {
         return Types.ACTIONS.ACTION_RIGHT;
       } else {
         return Types.ACTIONS.ACTION_LEFT;
       }
     }
     else {
-      if(to.position.y > from.position.y) {
+      if(to.y > from.y) {
         return Types.ACTIONS.ACTION_DOWN;
       } else {
         return Types.ACTIONS.ACTION_UP;
@@ -107,8 +120,7 @@ public class Agent extends BaseAgent {
       Observation exit = new Observation(exitList[0].get(0), stateObs.getBlockSize());
 
       // Calculate shortest path to nearest exit
-      path = pf.getPath(new Vector2d(avatar.getX(), avatar.getY()),
-        new Vector2d(exit.getX(), exit.getY()));
+      path = pf.getPath(ultimaPos, new Vector2d(exit.getX(), exit.getY()));
     }
 
     // Look for another gem
@@ -119,8 +131,7 @@ public class Agent extends BaseAgent {
       Observation gem = new Observation(gemList[0].get(0), stateObs.getBlockSize());
 
       // Calculate shortest path to nearest exit
-      path = pf.getPath(new Vector2d(avatar.getX(), avatar.getY()),
-        new Vector2d(gem.getX(), gem.getY()));
+      path = pf.getPath(ultimaPos, new Vector2d(gem.getX(), gem.getY()));
     }
   }
 
@@ -132,11 +143,12 @@ public class Agent extends BaseAgent {
 
     // Get current position and clear path if needed
     PlayerObservation avatar = getPlayer(stateObs);
-    if (((avatar.getX() != ultimaPos.getX()) || (avatar.getY() != ultimaPos.getY()))
+    if (((avatar.getX() != ultimaPos.x) || (avatar.getY() != ultimaPos.y))
       && !path.isEmpty()) {
       path.remove(0);
     }
-    ultimaPos = avatar;
+
+    ultimaPos = new Vector2d(avatar.getX(), avatar.getY());
 
     // Update path
     if (path.isEmpty()) {
@@ -144,9 +156,19 @@ public class Agent extends BaseAgent {
     }
 
     // Calculate next action
-    if (path != null) {
-      Node siguientePos = path.get(0);
-      action = getAction(new Node(new Vector2d(avatar.getX(), avatar.getY())), siguientePos);
+    try {
+      if(shouldEscape(stateObs)) {
+        System.out.println("Escapando...");
+        action = escape(stateObs);
+        System.out.println(action);
+      } else{
+        Vector2d siguientePos = path.get(0).position;
+        action = getAction(ultimaPos, siguientePos);
+      }
+
+    } catch(IndexOutOfBoundsException e){
+      System.out.println("El path está vacío:");
+      System.out.println(e);
     }
 
     return action;
