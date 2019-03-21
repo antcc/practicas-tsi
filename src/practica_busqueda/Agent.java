@@ -44,16 +44,32 @@ public class Agent extends BaseAgent {
   }
 
   /**
+   * Checks if a position is safe
+   * @param position The position to check
+   * @param stateObs The current state observation
+   * @return Whether it is safe
+   */
+  private boolean isSafe(Vector2d position, StateObservation stateObs){
+    int x = (int) position.x;
+    int y = (int) position.y;
+
+    for (core.game.Observation obs : stateObs.getObservationGrid()[x][y])
+      if(obs.itype == 7 || obs.itype == 10 || obs.itype == 11 || obs.itype == 0)
+        return false;
+    return true;
+  }
+
+  /**
    * Indica si el jugador está en una situación de peligro en el camino actual
    * @// FIXME: 19/03/19 Comprobar también monstruos cercanos?
    * @param stateObs
    * @return Si está en peligro
    */
   public boolean shouldEscape(StateObservation stateObs){
-      Vector2d siguientePos = path.get(0).position;
-      StateObservation newStateObs = stateObs.copy();
-      newStateObs.advance(getAction(ultimaPos,siguientePos));
-      return !newStateObs.isAvatarAlive();
+    Vector2d siguientePos = path.get(0).position;
+    StateObservation newStateObs = stateObs.copy();
+    newStateObs.advance(getAction(ultimaPos,siguientePos));
+    return !newStateObs.isAvatarAlive();
   }
 
   /**
@@ -62,16 +78,14 @@ public class Agent extends BaseAgent {
    * @return La acción para evitar el peligro
    */
   public Types.ACTIONS escape(StateObservation stateObs){
-
     for (Node vecino : pf.getNeighbours(new Node(ultimaPos))){
-      StateObservation newStateObs = stateObs.copy();
-      Types.ACTIONS action = getAction(ultimaPos, vecino.position);
-      newStateObs.advance(action);
-      if(newStateObs.isAvatarAlive()) {
+      if(isSafe(vecino.position, stateObs)){
+        Types.ACTIONS action = getAction(ultimaPos, vecino.position);
         path = new ArrayList<>();
         return action;
       }
     }
+    System.out.println("No se encontró ninguna ruta de escape desde " + ultimaPos);
     return Types.ACTIONS.ACTION_NIL;
   }
 
@@ -152,23 +166,24 @@ public class Agent extends BaseAgent {
 
     // Update path
     if (path.isEmpty()) {
+      System.out.println("Generando nuevo path.");
       calculateNewPath(stateObs);
     }
 
+
     // Calculate next action
     try {
-      if(shouldEscape(stateObs)) {
-        System.out.println("Escapando...");
+      Vector2d siguientePos = path.get(0).position;
+
+      if(shouldEscape(stateObs) || !isSafe(siguientePos, stateObs)) {
         action = escape(stateObs);
-        System.out.println(action);
+        System.out.println("Escapando: " + action);
       } else{
-        Vector2d siguientePos = path.get(0).position;
         action = getAction(ultimaPos, siguientePos);
       }
 
-    } catch(IndexOutOfBoundsException e){
-      System.out.println("El path está vacío:");
-      System.out.println(e);
+    } catch(IndexOutOfBoundsException|NullPointerException e) {
+      System.out.println("El path está vacío: " + e);
     }
 
     return action;
