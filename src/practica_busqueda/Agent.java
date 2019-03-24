@@ -158,15 +158,14 @@ public class Agent extends BaseAgent {
     // Get current position and clear path if needed
     PlayerObservation avatar = getPlayer(stateObs);
     if (((avatar.getX() != ultimaPos.x) || (avatar.getY() != ultimaPos.y))
-      && !path.isEmpty()) {
+      && path != null && !path.isEmpty()) {
       path.remove(0);
     }
 
     ultimaPos = new Vector2d(avatar.getX(), avatar.getY());
 
     // Update path
-    if (path.isEmpty()) {
-      System.out.println("Generando nuevo path.");
+    if (path == null || path.isEmpty()) {
       calculateNewPath(stateObs);
     }
 
@@ -177,7 +176,7 @@ public class Agent extends BaseAgent {
 
       if(shouldEscape(stateObs) || !isSafe(siguientePos, stateObs)) {
         action = escape(stateObs);
-        System.out.println("Escapando: " + action);
+        System.out.println("Escapando..." + action);
       } else{
         action = getAction(ultimaPos, siguientePos);
       }
