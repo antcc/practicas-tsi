@@ -24,6 +24,7 @@ public class Agent extends BaseAgent {
   private PathFinder pf;
   private ArrayList<Node> path = new ArrayList<>();
   private Vector2d ultimaPos;
+  private Random randomGenerator = new Random();
 
   public Agent(StateObservation so, ElapsedCpuTimer elapsedTimer) {
     super(so, elapsedTimer);
@@ -78,15 +79,21 @@ public class Agent extends BaseAgent {
    * @return La acción para evitar el peligro
    */
   public Types.ACTIONS escape(StateObservation stateObs){
-    for (Node vecino : pf.getNeighbours(new Node(ultimaPos))){
-      if(isSafe(vecino.position, stateObs)){
-        Types.ACTIONS action = getAction(ultimaPos, vecino.position);
-        path = new ArrayList<>();
-        return action;
-      }
+    ArrayList<Vector2d> seguras = new ArrayList<>();
+    for (Node vecino : pf.getNeighbours(new Node(ultimaPos)))
+      if(isSafe(vecino.position, stateObs))
+        seguras.add(vecino.position);
+
+    if(seguras.isEmpty()){
+      System.out.println("No se encontró ninguna ruta de escape desde " + ultimaPos);
+      return Types.ACTIONS.ACTION_NIL;
     }
-    System.out.println("No se encontró ninguna ruta de escape desde " + ultimaPos);
-    return Types.ACTIONS.ACTION_NIL;
+
+    int p = randomGenerator.nextInt(seguras.size());
+    Types.ACTIONS action = getAction(ultimaPos, seguras.get(p));
+    path = new ArrayList<>();
+    return action;
+
   }
 
   /**
@@ -182,7 +189,8 @@ public class Agent extends BaseAgent {
       }
 
     } catch(IndexOutOfBoundsException|NullPointerException e) {
-      System.out.println("El path está vacío: " + e);
+      System.err.println("El path está vacío: " + e);
+      action = escape(stateObs);
     }
 
     return action;
