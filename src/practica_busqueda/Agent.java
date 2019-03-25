@@ -73,6 +73,26 @@ public class Agent extends BaseAgent {
     return !newStateObs.isAvatarAlive();
   }
 
+  public ArrayList<Node> getNeighbours(Node node, StateObservation stateObs) {
+      ArrayList<Node> neighbours = new ArrayList<Node>();
+      int x = (int) (node.position.x);
+      int y = (int) (node.position.y);
+
+      //up, down, left, right
+      int[] x_arrNeig = new int[]{0,    0,    -1,    1};
+      int[] y_arrNeig = new int[]{-1,   1,     0,    0};
+
+      for(int i = 0; i < x_arrNeig.length; ++i)
+      {
+          if(isSafe(new Vector2d(x+x_arrNeig[i], y+y_arrNeig[i]), stateObs))
+          {
+              neighbours.add(new Node(new Vector2d(x+x_arrNeig[i], y+y_arrNeig[i])));
+          }
+      }
+
+      return neighbours;
+  }
+
   /**
    * Escapa de una situación de peligro
    * @param stateObs El estado actual
@@ -80,7 +100,7 @@ public class Agent extends BaseAgent {
    */
   public Types.ACTIONS escape(StateObservation stateObs){
     ArrayList<Vector2d> seguras = new ArrayList<>();
-    for (Node vecino : pf.getNeighbours(new Node(ultimaPos)))
+    for (Node vecino : getNeighbours(new Node(ultimaPos), stateObs))
       if(isSafe(vecino.position, stateObs))
         seguras.add(vecino.position);
 
@@ -91,6 +111,11 @@ public class Agent extends BaseAgent {
 
     int p = randomGenerator.nextInt(seguras.size());
     Types.ACTIONS action = getAction(ultimaPos, seguras.get(p));
+    if (ultimaPos.y <= 2 && ultimaPos.x == 3) {
+      for (Node vecino : pf.getNeighbours(new Node(ultimaPos)))
+        System.out.println(vecino.position);
+    }
+
     path = new ArrayList<>();
     return action;
 
@@ -169,6 +194,12 @@ public class Agent extends BaseAgent {
       path.remove(0);
     }
 
+    if (ultimaPos.equals(new Vector2d(avatar.getX(), avatar.getY()))) {
+      System.out.println("No se ha movido de " + ultimaPos);
+
+
+    }
+
     ultimaPos = new Vector2d(avatar.getX(), avatar.getY());
 
     // Update path
@@ -186,12 +217,15 @@ public class Agent extends BaseAgent {
         System.out.println("Escapando..." + action);
       } else{
         action = getAction(ultimaPos, siguientePos);
+        System.out.println("Coge acción del path");
       }
 
     } catch(IndexOutOfBoundsException|NullPointerException e) {
       System.err.println("El path está vacío: " + e);
       action = escape(stateObs);
+
     }
+
 
     return action;
   }
