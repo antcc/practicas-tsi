@@ -43,21 +43,6 @@ public class Agent extends BaseAgent {
     ultimaPos = new Vector2d(player.getX(), player.getY());
   }
 
-  /**
-   * Checks if a position is safe
-   * @param position The position to check
-   * @param stateObs The current state observation
-   * @return Whether it is safe
-   */
-  private boolean isSafe(Vector2d position, StateObservation stateObs){
-    int x = (int) position.x;
-    int y = (int) position.y;
-
-    for (core.game.Observation obs : stateObs.getObservationGrid()[x][y])
-      if(obs.itype == 7 || obs.itype == 10 || obs.itype == 11 || obs.itype == 0)
-        return false;
-    return true;
-  }
 
   /**
    * Indica si el jugador está en una situación de peligro en el camino actual
@@ -79,18 +64,15 @@ public class Agent extends BaseAgent {
    * @return La acción para evitar el peligro
    */
   public Types.ACTIONS escape(StateObservation stateObs){
-    ArrayList<Vector2d> seguras = new ArrayList<>();
-    for (Node vecino : finder.getNeighbours(new Node(ultimaPos), stateObs))
-      if(isSafe(vecino.position, stateObs))
-        seguras.add(vecino.position);
+    ArrayList<Node> vecinos = finder.getNeighbours(new Node(ultimaPos), stateObs);
 
-    if(seguras.isEmpty()){
+    if(vecinos.isEmpty()){
       System.out.println("No se encontró ninguna ruta de escape desde " + ultimaPos);
       return Types.ACTIONS.ACTION_NIL;
     }
 
-    int p = randomGenerator.nextInt(seguras.size());
-    Types.ACTIONS action = getAction(ultimaPos, seguras.get(p));
+    int p = randomGenerator.nextInt(vecinos.size());
+    Types.ACTIONS action = getAction(ultimaPos, vecinos.get(p).position);
     path = null;
     return action;
 
@@ -141,7 +123,7 @@ public class Agent extends BaseAgent {
       Observation exit = new Observation(exitList[0].get(0), stateObs.getBlockSize());
 
       // Calculate shortest path to nearest exit
-      path = finder.getPath(ultimaPos, new Vector2d(exit.getX(), exit.getY()));
+      path = finder.getPath(stateObs, ultimaPos, new Vector2d(exit.getX(), exit.getY()));
     }
 
     // Look for another gem
@@ -152,7 +134,7 @@ public class Agent extends BaseAgent {
       Observation gem = new Observation(gemList[0].get(0), stateObs.getBlockSize());
 
       // Calculate shortest path to nearest exit
-      path = finder.getPath(ultimaPos, new Vector2d(gem.getX(), gem.getY()));
+      path = finder.getPath(stateObs, ultimaPos, new Vector2d(gem.getX(), gem.getY()));
     }
   }
 
@@ -171,8 +153,6 @@ public class Agent extends BaseAgent {
 
     if (ultimaPos.equals(new Vector2d(avatar.getX(), avatar.getY()))) {
       System.out.println("No se ha movido de " + ultimaPos);
-
-
     }
 
     ultimaPos = new Vector2d(avatar.getX(), avatar.getY());
@@ -187,11 +167,7 @@ public class Agent extends BaseAgent {
     try {
       Vector2d siguientePos = path.get(0).position;
 
-      if(ultimaPos.equals(new Vector2d(8,3))){
-        System.out.println("Siguiente posición: " + siguientePos);
-        System.out.println("Es segura? " + isSafe(siguientePos,stateObs));
-      }
-      if(!isSafe(siguientePos, stateObs)) {
+      if(!finder.isSafe(siguientePos, stateObs)) {
         action = escape(stateObs);
         System.out.println("Escapando..." + action);
       } else{
