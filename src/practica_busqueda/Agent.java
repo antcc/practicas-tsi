@@ -12,7 +12,6 @@ import tools.Vector2d;
 
 // Basic A* agent
 import tools.pathfinder.Node;
-import tools.pathfinder.PathFinder;
 
 /**
  * Agent class
@@ -21,7 +20,7 @@ import tools.pathfinder.PathFinder;
 public class Agent extends BaseAgent {
 
   // Basic A* agent
-  private PathFinder pf;
+  private AEstrella finder;
   private ArrayList<Node> path = new ArrayList<>();
   private Vector2d ultimaPos;
   private Random randomGenerator = new Random();
@@ -36,8 +35,8 @@ public class Agent extends BaseAgent {
     tiposObs.add(7);  // <- Piedras
 
     // Init pathfinder
-    pf = new PathFinder(tiposObs);
-    pf.run(so);
+    finder = new AEstrella();
+    finder.run(so);
 
     // Get last known position
     PlayerObservation player = getPlayer(so);
@@ -62,35 +61,16 @@ public class Agent extends BaseAgent {
 
   /**
    * Indica si el jugador está en una situación de peligro en el camino actual
-   * @// FIXME: 19/03/19 Comprobar también monstruos cercanos?
+   * FIXME: Comprobar también monstruos cercanos?
+   * FIXME: ¿Por qué dice que ha muerto cuando no va en realidad a morir?
+   * FIXME: Si se añade esta condición no consigue escapar. ¿Por qué?
    * @param stateObs
    * @return Si está en peligro
    */
-  public boolean shouldEscape(StateObservation stateObs){
-    Vector2d siguientePos = path.get(0).position;
+  public boolean shouldEscape(StateObservation stateObs, Types.ACTIONS action){
     StateObservation newStateObs = stateObs.copy();
-    newStateObs.advance(getAction(ultimaPos,siguientePos));
+    newStateObs.advance(action);
     return !newStateObs.isAvatarAlive();
-  }
-
-  public ArrayList<Node> getNeighbours(Node node, StateObservation stateObs) {
-      ArrayList<Node> neighbours = new ArrayList<Node>();
-      int x = (int) (node.position.x);
-      int y = (int) (node.position.y);
-
-      //up, down, left, right
-      int[] x_arrNeig = new int[]{0,    0,    -1,    1};
-      int[] y_arrNeig = new int[]{-1,   1,     0,    0};
-
-      for(int i = 0; i < x_arrNeig.length; ++i)
-      {
-          if(isSafe(new Vector2d(x+x_arrNeig[i], y+y_arrNeig[i]), stateObs))
-          {
-              neighbours.add(new Node(new Vector2d(x+x_arrNeig[i], y+y_arrNeig[i])));
-          }
-      }
-
-      return neighbours;
   }
 
   /**
@@ -100,7 +80,7 @@ public class Agent extends BaseAgent {
    */
   public Types.ACTIONS escape(StateObservation stateObs){
     ArrayList<Vector2d> seguras = new ArrayList<>();
-    for (Node vecino : getNeighbours(new Node(ultimaPos), stateObs))
+    for (Node vecino : finder.getNeighbours(new Node(ultimaPos), stateObs))
       if(isSafe(vecino.position, stateObs))
         seguras.add(vecino.position);
 
@@ -111,12 +91,7 @@ public class Agent extends BaseAgent {
 
     int p = randomGenerator.nextInt(seguras.size());
     Types.ACTIONS action = getAction(ultimaPos, seguras.get(p));
-    if (ultimaPos.y <= 2 && ultimaPos.x == 3) {
-      for (Node vecino : pf.getNeighbours(new Node(ultimaPos)))
-        System.out.println(vecino.position);
-    }
-
-    path = new ArrayList<>();
+    path = null;
     return action;
 
   }
@@ -166,7 +141,7 @@ public class Agent extends BaseAgent {
       Observation exit = new Observation(exitList[0].get(0), stateObs.getBlockSize());
 
       // Calculate shortest path to nearest exit
-      path = pf.getPath(ultimaPos, new Vector2d(exit.getX(), exit.getY()));
+      path = finder.getPath(ultimaPos, new Vector2d(exit.getX(), exit.getY()));
     }
 
     // Look for another gem
@@ -177,7 +152,7 @@ public class Agent extends BaseAgent {
       Observation gem = new Observation(gemList[0].get(0), stateObs.getBlockSize());
 
       // Calculate shortest path to nearest exit
-      path = pf.getPath(ultimaPos, new Vector2d(gem.getX(), gem.getY()));
+      path = finder.getPath(ultimaPos, new Vector2d(gem.getX(), gem.getY()));
     }
   }
 
@@ -212,7 +187,11 @@ public class Agent extends BaseAgent {
     try {
       Vector2d siguientePos = path.get(0).position;
 
-      if(shouldEscape(stateObs) || !isSafe(siguientePos, stateObs)) {
+      if(ultimaPos.equals(new Vector2d(8,3))){
+        System.out.println("Siguiente posición: " + siguientePos);
+        System.out.println("Es segura? " + isSafe(siguientePos,stateObs));
+      }
+      if(!isSafe(siguientePos, stateObs)) {
         action = escape(stateObs);
         System.out.println("Escapando..." + action);
       } else{
