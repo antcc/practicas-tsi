@@ -117,24 +117,14 @@ public class Agent extends BaseAgent {
     int gems = getNumGems(stateObs);
     // Look for the exit (all gems collected)
     if (gems == NUM_GEMS_FOR_EXIT) {
-      // Select nearest exit
-      ArrayList<core.game.Observation>[] exitList
-        = stateObs.getPortalsPositions(stateObs.getAvatarPosition());
-      Observation exit = new Observation(exitList[0].get(0), stateObs.getBlockSize());
-
       // Calculate shortest path to nearest exit
-      path = finder.getPath(stateObs, ultimaPos, new Vector2d(exit.getX(), exit.getY()));
+      path = finder.getPath(stateObs, ultimaPos, AEstrella.Goal.EXIT);
     }
 
     // Look for another gem
     else {
-      // Select nearest gem
-      ArrayList<core.game.Observation>[] gemList
-        = stateObs.getResourcesPositions(stateObs.getAvatarPosition());
-      Observation gem = new Observation(gemList[0].get(0), stateObs.getBlockSize());
-
       // Calculate shortest path to nearest exit
-      path = finder.getPath(stateObs, ultimaPos, new Vector2d(gem.getX(), gem.getY()));
+      path = finder.getPath(stateObs, ultimaPos, AEstrella.Goal.GEMS);
     }
   }
 
@@ -169,10 +159,8 @@ public class Agent extends BaseAgent {
 
       if(!finder.isSafe(siguientePos, stateObs)) {
         action = escape(stateObs);
-        System.out.println("Escapando..." + action);
       } else{
         action = getAction(ultimaPos, siguientePos);
-        System.out.println("Coge acción del path");
       }
 
     } catch(IndexOutOfBoundsException|NullPointerException e) {
