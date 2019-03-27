@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.PriorityQueue;
 
 public class AEstrella {
-  private PathFinder pf;
+  private static PathFinder pf;
 
   public AEstrella(){
     ArrayList<Integer> tiposObs = new ArrayList<>();
@@ -59,7 +59,7 @@ public class AEstrella {
   }
 
   public ArrayList<Node> getPath(StateObservation stateObs, Vector2d start, Vector2d end){
-    return pf.getPath(start, end);
+    return findPath(stateObs, new Node(start), new Node(end));
   }
 
   /***********************
@@ -74,13 +74,10 @@ public class AEstrella {
    */
   private static double heuristicEstimatedCost(Node curNode, Node goalNode)
   {
-    //4-way: using Manhattan
-    double xDiff = Math.abs(curNode.position.x - goalNode.position.x);
-    double yDiff = Math.abs(curNode.position.y - goalNode.position.y);
-    return xDiff + yDiff;
-
-    //This is Euclidean distance(sub-optimal here).
-    //return curNode.position.dist(goalNode.position);
+    ArrayList<Node> path = pf.getPath(curNode.position, goalNode.position);
+    if(path == null)
+      return 0; // No sabemos cuánto cuesta
+    return path.size();
   }
 
   private ArrayList<Node> calculatePath(Node node)
