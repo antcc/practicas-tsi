@@ -28,15 +28,8 @@ public class Agent extends BaseAgent {
   public Agent(StateObservation so, ElapsedCpuTimer elapsedTimer) {
     super(so, elapsedTimer);
 
-    // Basic A* agent
-    // Set obstacle types
-    ArrayList<Integer> tiposObs = new ArrayList<>();
-    tiposObs.add(0);  // <- Muros
-    tiposObs.add(7);  // <- Piedras
-
     // Init pathfinder
-    finder = new AEstrella();
-    finder.run(so);
+    finder = new AEstrella(so);
 
     // Get last known position
     PlayerObservation player = getPlayer(so);
@@ -49,7 +42,7 @@ public class Agent extends BaseAgent {
    * FIXME: Comprobar también monstruos cercanos?
    * FIXME: ¿Por qué dice que ha muerto cuando no va en realidad a morir?
    * FIXME: Si se añade esta condición no consigue escapar. ¿Por qué?
-   * @param stateObs
+   * @param stateObs The current state
    * @return Si está en peligro
    */
   public boolean shouldEscape(StateObservation stateObs, Types.ACTIONS action){
@@ -78,10 +71,10 @@ public class Agent extends BaseAgent {
 
   }
 
-  /**
-   * *********************************************
-   * Test act methods
-   * *********************************************
+  /*
+    *********************************************
+    Test act methods
+    *********************************************
    */
 
   /**
@@ -107,32 +100,11 @@ public class Agent extends BaseAgent {
     }
   }
 
-  /**
-   * Calculate a new path
-   * @param stateObs The current state
-   */
-  private void calculateNewPath(StateObservation stateObs){
-    PlayerObservation avatar = getPlayer(stateObs);
-    // Get current gem count
-    int gems = getNumGems(stateObs);
-    // Look for the exit (all gems collected)
-    if (gems == NUM_GEMS_FOR_EXIT) {
-      // Calculate shortest path to nearest exit
-      path = finder.getPath(stateObs, ultimaPos, AEstrella.Goal.EXIT);
-    }
-
-    // Look for another gem
-    else {
-      // Calculate shortest path to nearest exit
-      path = finder.getPath(stateObs, ultimaPos, AEstrella.Goal.GEMS);
-    }
-  }
-
   // Basic A* agent act method
   @Override
   public Types.ACTIONS act(StateObservation stateObs, ElapsedCpuTimer elapsedTimer) {
     // Set default action
-    Types.ACTIONS action = Types.ACTIONS.ACTION_NIL;
+    Types.ACTIONS action;
 
     // Get current position and clear path if needed
     PlayerObservation avatar = getPlayer(stateObs);
@@ -149,7 +121,9 @@ public class Agent extends BaseAgent {
 
     // Update path
     if (path == null || path.isEmpty()) {
-      calculateNewPath(stateObs);
+      if (getNumGems(stateObs) == NUM_GEMS_FOR_EXIT)
+        finder.lookForExit();
+      path = finder.getPath(stateObs, ultimaPos);
     }
 
 

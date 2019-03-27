@@ -7,38 +7,40 @@ import tools.Vector2d;
 import tools.pathfinder.Node;
 import tools.pathfinder.PathFinder;
 
-import javax.swing.plaf.nimbus.State;
 import java.util.ArrayList;
 import java.util.PriorityQueue;
 
-public class AEstrella {
-  public enum Goal {
-    EXIT, GEMS
-  }
-  
-  private static PathFinder pf;
+class AEstrella {
 
-  public AEstrella(){
+  private boolean findExit; // If the current goal is to find the exit or the gems
+  private static PathFinder pf; // A pathfinder (for the heuristic)
+
+  AEstrella(StateObservation so){
     ArrayList<Integer> tiposObs = new ArrayList<>();
     tiposObs.add(0);  // <- Muros
     tiposObs.add(7);  // <- Piedras
 
     // Init pathfinder
     pf = new PathFinder(tiposObs);
-  }
-
-  public void run(StateObservation so){
     pf.run(so);
+    findExit = false; // Initially we look for gems
   }
 
+
+  /**
+   * Activates looking-for-exit mode
+   */
+  void lookForExit(){
+    findExit = true;
+  }
 
   /**
    * Checks if a position is safe
    * @param position The position to check
    * @param stateObs The current state observation
-   * @return Whether it is safe
+   * @return Whether `position` is safe
    */
-  public boolean isSafe(Vector2d position, StateObservation stateObs){
+  boolean isSafe(Vector2d position, StateObservation stateObs){
     int x = (int) position.x;
     int y = (int) position.y;
 
@@ -57,10 +59,16 @@ public class AEstrella {
     return true;
   }
 
-  public ArrayList<Node> getNeighbours(Node node, StateObservation stateObs) {
+  /**
+   * Get (reachable) neighbors from a node
+   * @param node Node to build the neighbor list from
+   * @param stateObs The current state of the game
+   * @return An ArrayList of reachable neighbors
+   */
+  ArrayList<Node> getNeighbours(Node node, StateObservation stateObs) {
     ArrayList<Node> neighbours = new ArrayList<>();
-    int x = (int) (node.position.x);
-    int y = (int) (node.position.y);
+    int x = (int) node.position.x;
+    int y = (int) node.position.y;
 
     //up, down, left, right
     int[] x_arrNeig = new int[]{0,    0,    -1,    1};
@@ -72,16 +80,18 @@ public class AEstrella {
     return neighbours;
   }
 
-  public ArrayList<Node> getPath(StateObservation stateObs, Vector2d start, Goal goal){
-    return findPath(stateObs, new Node(start), goal);
-  }
 
-  /***********************
-   * Funciones para A*   *
-   ***********************/
+  /* Funciones para A */
 
-  private boolean reachedGoal(Vector2d position, Goal goal, StateObservation stateObs){
-    if(goal == Goal.EXIT){
+  /**
+   * Checks if goal has been reached
+   * @param position The current position
+   * @param stateObs The current state of the game
+   * @return Whether the current position is the position of a goal
+   */
+  private boolean reachedGoal(Vector2d position, StateObservation stateObs){
+    // FIXME: Podría ser más eficiente sin tener que crear la Observation en cada comprobación
+    if(findExit){
       core.game.Observation exitObs
         = stateObs.getPortalsPositions(stateObs.getAvatarPosition())[0].get(0);
       practica_busqueda.Observation exit =
@@ -100,14 +110,14 @@ public class AEstrella {
   }
 
   /**
-   * Función heurística
-   * @param curNode
-   * @param goal
-   * @return
+   * Heuristic function
+   * @param curNode The current node
+   * @param stateObs The current state of the game
+   * @return An estimation of the cost to reach the current goal
    */
-  private double heuristicEstimatedCost(Node curNode, Goal curObjective, StateObservation stateObs){
+  private double heuristicEstimatedCost(Node curNode, StateObservation stateObs){
     ArrayList<core.game.Observation> goals;
-    if(curObjective == Goal.EXIT){
+    if(findExit){
       goals = new ArrayList<>();
       goals.add(stateObs.getPortalsPositions(stateObs.getAvatarPosition())[0].get(0));
     } else{
@@ -124,7 +134,7 @@ public class AEstrella {
       if(path == null) { // Pathfinder no encuentra camino
         double xDiff = Math.abs(curNode.position.x - goal.getX());
         double yDiff = Math.abs(curNode.position.y - goal.getY());
-        pathCost = xDiff + yDiff;
+        pathCost = xDiff + yDiff; // FIXME: Sería mejor guiarse sólo por las alcanzables inicialmente si hay alguna
       } else {
         pathCost = path.size(); // FIXME: Ajustar por elementos peligrosos
       }
@@ -134,9 +144,14 @@ public class AEstrella {
     return cost;
   }
 
-  private ArrayList<Node> calculatePath(Node node)
-  {
-    ArrayList<Node> path = new ArrayList<Node>();
+  /**
+   * Construct path from final node
+   * FIXME En búsqueda en estados es mejor devolver la lista de acciones directamente.
+   * @param node The goal node
+   * @return A list of nodes that gets you to the goal node
+   */
+  private ArrayList<Node> calculatePath(Node node) {
+    ArrayList<Node> path = new ArrayList<>();
     while(node != null)
     {
       if(node.parent != null) //to avoid adding the start node.
@@ -150,19 +165,20 @@ public class AEstrella {
   }
 
   /**
-   * findPath con A estrella
-   * @param start
-   * @param goal
-   * @return
+   * getPath towards the goal using A* algorithm
+   * @param startPos The starting position
+   * @param stateObs The current state of the game
+   * @return The list of nodes that gets you to the end (or null if there is no path)
    */
-  private ArrayList<Node> findPath(StateObservation stateObs, Node start, Goal goal)
+  ArrayList<Node> getPath(StateObservation stateObs, Vector2d startPos)
   {
     Node node = null;
     PriorityQueue<Node> openList = new PriorityQueue<>();
     PriorityQueue<Node> closedList = new PriorityQueue<>();
 
+    Node start = new Node(startPos);
     start.totalCost = 0.0f;
-    start.estimatedCost = heuristicEstimatedCost(start, goal, stateObs);
+    start.estimatedCost = heuristicEstimatedCost(start, stateObs);
 
     openList.add(start);
 
@@ -171,7 +187,7 @@ public class AEstrella {
       node = openList.poll();
       closedList.add(node);
 
-      if(reachedGoal(node.position, goal, stateObs))
+      if(reachedGoal(node.position, stateObs))
         return calculatePath(node);
 
       // FIXME: No muestra vecinos con monstruos (que podrían no tenerlos en el futuro)
@@ -182,7 +198,7 @@ public class AEstrella {
 
         if (!openList.contains(neighbour) && !closedList.contains(neighbour)) {
           neighbour.totalCost = curDistance + node.totalCost;
-          neighbour.estimatedCost = heuristicEstimatedCost(neighbour, goal, stateObs);
+          neighbour.estimatedCost = heuristicEstimatedCost(neighbour, stateObs);
           neighbour.parent = node;
 
           openList.add(neighbour);
@@ -201,7 +217,8 @@ public class AEstrella {
 
     }
 
-    if(!reachedGoal(node.position, goal, stateObs))
+    assert node != null;
+    if(!reachedGoal(node.position, stateObs))
       return null;
 
     return calculatePath(node);
