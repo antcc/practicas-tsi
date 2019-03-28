@@ -11,9 +11,10 @@ import java.util.ArrayList;
 import java.util.PriorityQueue;
 
 class AEstrella {
+  private static PathFinder pf; // A pathfinder (for the heuristic)
 
   private boolean findExit; // If the current goal is to find the exit or the gems
-  private static PathFinder pf; // A pathfinder (for the heuristic)
+  private ArrayList<practica_busqueda.Observation> goals; // The current list of goals
 
   AEstrella(StateObservation so){
     ArrayList<Integer> tiposObs = new ArrayList<>();
@@ -24,6 +25,28 @@ class AEstrella {
     pf = new PathFinder(tiposObs);
     pf.run(so);
     findExit = false; // Initially we look for gems
+    goals    = new ArrayList<>();
+  }
+
+  /**
+   * Updates list of goals
+   * @param stateObs
+   * MUST be called at the beginning of getPath.
+   */
+  private void updateGoals(StateObservation stateObs){
+    // Get list of goals as core.game.Observations
+    ArrayList<Observation> goalsCore;
+    if(findExit){
+      goalsCore = new ArrayList<>();
+      goalsCore.add(stateObs.getPortalsPositions(stateObs.getAvatarPosition())[0].get(0));
+    } else{
+      goalsCore = stateObs.getResourcesPositions(stateObs.getAvatarPosition())[0];
+    }
+
+    // Update them as goals with game coordinates
+    goals.clear();
+    for(Observation goalCore : goalsCore)
+      goals.add(new practica_busqueda.Observation(goalCore,stateObs.getBlockSize()));
   }
 
 
@@ -86,48 +109,24 @@ class AEstrella {
   /**
    * Checks if goal has been reached
    * @param position The current position
-   * @param stateObs The current state of the game
    * @return Whether the current position is the position of a goal
    */
-  private boolean reachedGoal(Vector2d position, StateObservation stateObs){
-    // FIXME: Podría ser más eficiente sin tener que crear la Observation en cada comprobación
-    if(findExit){
-      core.game.Observation exitObs
-        = stateObs.getPortalsPositions(stateObs.getAvatarPosition())[0].get(0);
-      practica_busqueda.Observation exit =
-        new practica_busqueda.Observation(exitObs, stateObs.getBlockSize());
-      return exit.getX() == position.x && exit.getY() == position.y;
-
-    } else{
-      ArrayList<core.game.Observation>[] gemList = stateObs.getResourcesPositions(stateObs.getAvatarPosition());
-      for (core.game.Observation gemObs : gemList[0]){
-        practica_busqueda.Observation gem = new practica_busqueda.Observation(gemObs,stateObs.getBlockSize());
-        if(gem.getX() == position.x && gem.getY() == position.y)
-          return true;
-      }
-      return false;
-    }
+  private boolean reachedGoal(Vector2d position){
+    for (practica_busqueda.Observation goal: goals)
+      if(goal.getX() == position.x && goal.getY() == position.y)
+        return true;
+    return false;
   }
 
   /**
    * Heuristic function
    * @param curNode The current node
-   * @param stateObs The current state of the game
    * @return An estimation of the cost to reach the current goal
    */
-  private double heuristicEstimatedCost(Node curNode, StateObservation stateObs){
-    ArrayList<core.game.Observation> goals;
-    if(findExit){
-      goals = new ArrayList<>();
-      goals.add(stateObs.getPortalsPositions(stateObs.getAvatarPosition())[0].get(0));
-    } else{
-      goals = stateObs.getResourcesPositions(stateObs.getAvatarPosition())[0];
-    }
-
+  private double heuristicEstimatedCost(Node curNode){
     double cost = Double.POSITIVE_INFINITY;
 
-    for(core.game.Observation goalObs : goals){
-      practica_busqueda.Observation goal = new practica_busqueda.Observation(goalObs, stateObs.getBlockSize());
+    for(practica_busqueda.Observation goal : goals){
       ArrayList<Node> path = pf.getPath(curNode.position, new Vector2d(goal.getX(), goal.getY()));
 
       double pathCost;
@@ -152,10 +151,8 @@ class AEstrella {
    */
   private ArrayList<Node> calculatePath(Node node) {
     ArrayList<Node> path = new ArrayList<>();
-    while(node != null)
-    {
-      if(node.parent != null) //to avoid adding the start node.
-      {
+    while(node != null) {
+      if(node.parent != null){ //to avoid adding the start node.
         node.setMoveDir(node.parent);
         path.add(0,node);
       }
@@ -170,15 +167,15 @@ class AEstrella {
    * @param stateObs The current state of the game
    * @return The list of nodes that gets you to the end (or null if there is no path)
    */
-  ArrayList<Node> getPath(StateObservation stateObs, Vector2d startPos)
-  {
+  ArrayList<Node> getPath(StateObservation stateObs, Vector2d startPos){
+    updateGoals(stateObs); // IMPORTANT (!)
     Node node = null;
     PriorityQueue<Node> openList = new PriorityQueue<>();
     PriorityQueue<Node> closedList = new PriorityQueue<>();
 
     Node start = new Node(startPos);
     start.totalCost = 0.0f;
-    start.estimatedCost = heuristicEstimatedCost(start, stateObs);
+    start.estimatedCost = heuristicEstimatedCost(start);
 
     openList.add(start);
 
@@ -187,7 +184,7 @@ class AEstrella {
       node = openList.poll();
       closedList.add(node);
 
-      if(reachedGoal(node.position, stateObs))
+      if(reachedGoal(node.position))
         return calculatePath(node);
 
       // FIXME: No muestra vecinos con monstruos (que podrían no tenerlos en el futuro)
@@ -198,7 +195,7 @@ class AEstrella {
 
         if (!openList.contains(neighbour) && !closedList.contains(neighbour)) {
           neighbour.totalCost = curDistance + node.totalCost;
-          neighbour.estimatedCost = heuristicEstimatedCost(neighbour, stateObs);
+          neighbour.estimatedCost = heuristicEstimatedCost(neighbour);
           neighbour.parent = node;
 
           openList.add(neighbour);
@@ -218,7 +215,7 @@ class AEstrella {
     }
 
     assert node != null;
-    if(!reachedGoal(node.position, stateObs))
+    if(!reachedGoal(node.position))
       return null;
 
     return calculatePath(node);
