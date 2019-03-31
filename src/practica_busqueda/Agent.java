@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Random;
 
 // General game imports
+import core.game.Observation;
 import core.game.StateObservation;
 import ontology.Types;
 import tools.ElapsedCpuTimer;
@@ -57,15 +58,37 @@ public class Agent extends BaseAgent {
    * @return La acción para evitar el peligro
    */
   public Types.ACTIONS escape(StateObservation stateObs){
-    ArrayList<Node> vecinos = finder.getNeighbours(new Node(ultimaPos), stateObs);
+    ArrayList<Node> vecinos2 = finder.getNeighbours(new Node(ultimaPos), stateObs);
+
+    ArrayList<Node> vecinos = new ArrayList<>();
+    for(Node vecino : vecinos2){
+      if(!shouldEscape(stateObs, getAction(ultimaPos, vecino.position))){
+        vecinos.add(vecino);
+      }
+    }
 
     if(vecinos.isEmpty()){
       System.out.println("No se encontró ninguna ruta de escape desde " + ultimaPos);
       return Types.ACTIONS.ACTION_NIL;
     }
 
-    int p = randomGenerator.nextInt(vecinos.size());
-    Types.ACTIONS action = getAction(ultimaPos, vecinos.get(p).position);
+    Node vecinoElegido = null;
+    ArrayList<core.game.Observation>[] npcPositions = stateObs.getNPCPositions();
+    double maxDist = Double.NEGATIVE_INFINITY;
+    for(Node vecino : vecinos){
+      double dist = 0;
+      for (ArrayList<core.game.Observation> npcs : npcPositions)
+        for(Observation npc : npcs)
+          dist += npc.position.dist(vecino.position);
+      if(maxDist < dist){
+        vecinoElegido = vecino;
+        maxDist = dist;
+      }
+    }
+
+
+    //int p = randomGenerator.nextInt(vecinos.size());
+    Types.ACTIONS action = getAction(ultimaPos, vecinoElegido.position);
     path = null;
     return action;
 
@@ -114,10 +137,11 @@ public class Agent extends BaseAgent {
     }
 
     if (ultimaPos.equals(new Vector2d(avatar.getX(), avatar.getY()))) {
-      System.out.println("No se ha movido de " + ultimaPos);
+      //System.out.println("No se ha movido de " + ultimaPos);
     }
 
     ultimaPos = new Vector2d(avatar.getX(), avatar.getY());
+    //System.out.println(ultimaPos);
 
     // Update path
     if (path == null || path.isEmpty()) {
@@ -131,14 +155,14 @@ public class Agent extends BaseAgent {
     try {
       Vector2d siguientePos = path.get(0).position;
 
-      if(!finder.isSafe(siguientePos, stateObs)) {
+      if(!finder.isSafe(siguientePos, stateObs) || shouldEscape(stateObs,getAction(ultimaPos, siguientePos))) {
         action = escape(stateObs);
       } else{
         action = getAction(ultimaPos, siguientePos);
       }
 
     } catch(IndexOutOfBoundsException|NullPointerException e) {
-      System.err.println("El path está vacío: " + e);
+      //System.err.println("El path está vacío: " + e);
       action = escape(stateObs);
 
     }

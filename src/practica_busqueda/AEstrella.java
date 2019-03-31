@@ -68,18 +68,18 @@ class AEstrella {
     int y = (int) position.y;
 
     for (core.game.Observation obs : stateObs.getObservationGrid()[x][y])
-      if(obs.itype == 7 || obs.itype == 0)
+      if(obs.itype == 7 || obs.itype == 0 || obs.itype == 10 || obs.itype == 11)
         return false;
-
-    // FIXME: Esto comprueba que no esté muy cerca de un monstruo, aún así le atacan los monstruos. ¿Por qué?
-    ArrayList<Observation>[] npcPositions = stateObs.getNPCPositions();
-    for (ArrayList<Observation> npcs : npcPositions)
-      for(Observation npc : npcs){
-        if(npc.position.dist(position) <= 4*stateObs.getBlockSize()) { // Reformular en términos de observations de practica_busqueda?
-          return false;
-        }
-      }
     return true;
+    // FIXME: Esto comprueba que no esté muy cerca de un monstruo, aún así le atacan los monstruos. ¿Por qué?
+    //ArrayList<Observation>[] npcPositions = stateObs.getNPCPositions();
+    //for (ArrayList<Observation> npcs : npcPositions)
+     // for(Observation npc : npcs){
+     //   if(npc.position.dist(position) <= 3*stateObs.getBlockSize()) { // Reformular en términos de observations de practica_busqueda?
+     //     return false;
+     //   }
+     // }
+    //return true;
   }
 
   /**
@@ -168,7 +168,7 @@ class AEstrella {
    * @return The list of nodes that gets you to the end (or null if there is no path)
    */
   ArrayList<Node> getPath(StateObservation stateObs, Vector2d startPos){
-    updateGoals(stateObs); // IMPORTANT (!)
+    updateGoals(stateObs); // IMPORTANTE (!)
     Node node = null;
     PriorityQueue<Node> openList = new PriorityQueue<>();
     PriorityQueue<Node> closedList = new PriorityQueue<>();
