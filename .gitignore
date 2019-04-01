@@ -12,4 +12,5 @@ src/*
 src/practica_busqueda/*
 !src/practica_busqueda/Agent.java
 !src/practica_busqueda/AEstrella.java
+!src/practica_busqueda/NodoAEstrella.java
 !levels/

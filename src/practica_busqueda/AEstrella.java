@@ -3,18 +3,25 @@ package practica_busqueda;
 // Basic A* agent
 import core.game.Observation;
 import core.game.StateObservation;
+import ontology.Types;
 import tools.Vector2d;
 import tools.pathfinder.Node;
 import tools.pathfinder.PathFinder;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.PriorityQueue;
 
 class AEstrella {
   private static PathFinder pf; // A pathfinder (for the heuristic)
-
   private boolean findExit; // If the current goal is to find the exit or the gems
   private ArrayList<practica_busqueda.Observation> goals; // The current list of goals
+  private static final  ArrayList<Types.ACTIONS>
+    lista_acciones = new ArrayList<>(Arrays.asList(
+      Types.ACTIONS.ACTION_UP,
+      Types.ACTIONS.ACTION_DOWN,
+      Types.ACTIONS.ACTION_RIGHT,
+      Types.ACTIONS.ACTION_LEFT));
 
   AEstrella(StateObservation so){
     ArrayList<Integer> tiposObs = new ArrayList<>();
@@ -71,35 +78,54 @@ class AEstrella {
       if(obs.itype == 7 || obs.itype == 0 || obs.itype == 10 || obs.itype == 11)
         return false;
     return true;
-    // FIXME: Esto comprueba que no esté muy cerca de un monstruo, aún así le atacan los monstruos. ¿Por qué?
-    //ArrayList<Observation>[] npcPositions = stateObs.getNPCPositions();
-    //for (ArrayList<Observation> npcs : npcPositions)
-     // for(Observation npc : npcs){
-     //   if(npc.position.dist(position) <= 3*stateObs.getBlockSize()) { // Reformular en términos de observations de practica_busqueda?
-     //     return false;
-     //   }
-     // }
-    //return true;
+  }
+
+  private Vector2d getNewPosition(Vector2d curPosition, Types.ACTIONS action){
+    Vector2d newPosition = curPosition;
+    switch (action){
+      case ACTION_UP:
+        newPosition = new Vector2d(curPosition.x, curPosition.y - 1);
+        break;
+      case ACTION_RIGHT:
+        newPosition = new Vector2d(curPosition.x+1, curPosition.y);
+        break;
+      case ACTION_DOWN:
+        newPosition = new Vector2d(curPosition.x, curPosition.y + 1);
+        break;
+      case ACTION_LEFT:
+        newPosition = new Vector2d(curPosition.x-1, curPosition.y);
+        break;
+    }
+
+    return newPosition;
   }
 
   /**
    * Get (reachable) neighbors from a node
    * @param node Node to build the neighbor list from
-   * @param stateObs The current state of the game
    * @return An ArrayList of reachable neighbors
    */
-  ArrayList<Node> getNeighbours(Node node, StateObservation stateObs) {
-    ArrayList<Node> neighbours = new ArrayList<>();
-    int x = (int) node.position.x;
-    int y = (int) node.position.y;
+  ArrayList<NodoAEstrella> getNeighbours(NodoAEstrella node) {
+    ArrayList<NodoAEstrella> neighbours = new ArrayList<>();
+    StateObservation curState = node.stateObs;
 
-    //up, down, left, right
-    int[] x_arrNeig = new int[]{0,    0,    -1,    1};
-    int[] y_arrNeig = new int[]{-1,   1,     0,    0};
+    for (Types.ACTIONS action : lista_acciones){
+      Vector2d newPosition = getNewPosition(node.position,action);
+      // FIXME Hay coordenadas de pixel que deberían ser de juego
+      int x = (int) newPosition.x/curState.getBlockSize();
+      int y = (int) newPosition.y/curState.getBlockSize();
+      System.out.println(newPosition);
+      final ArrayList<Observation> observations = curState.getObservationGrid()[x][y];
+      for(Observation obs : observations)
+        if(obs.itype == 0 || obs.itype == 7)
+          continue;
 
-    for(int i = 0; i < x_arrNeig.length; ++i)
-      if(isSafe(new Vector2d(x+x_arrNeig[i], y+y_arrNeig[i]), stateObs))
-        neighbours.add(new Node(new Vector2d(x+x_arrNeig[i], y+y_arrNeig[i])));
+      StateObservation newState = curState.copy();
+      newState.advance(action);
+      if(newState.isAvatarAlive()){
+        neighbours.add(new NodoAEstrella(newState));
+      }
+    }
     return neighbours;
   }
 
@@ -123,7 +149,7 @@ class AEstrella {
    * @param curNode The current node
    * @return An estimation of the cost to reach the current goal
    */
-  private double heuristicEstimatedCost(Node curNode){
+  private double heuristicEstimatedCost(NodoAEstrella curNode){
     double cost = Double.POSITIVE_INFINITY;
 
     for(practica_busqueda.Observation goal : goals){
@@ -149,8 +175,8 @@ class AEstrella {
    * @param node The goal node
    * @return A list of nodes that gets you to the goal node
    */
-  private ArrayList<Node> calculatePath(Node node) {
-    ArrayList<Node> path = new ArrayList<>();
+  private ArrayList<NodoAEstrella> calculatePath(NodoAEstrella node) {
+    ArrayList<NodoAEstrella> path = new ArrayList<>();
     while(node != null) {
       if(node.parent != null){ //to avoid adding the start node.
         node.setMoveDir(node.parent);
@@ -167,13 +193,13 @@ class AEstrella {
    * @param stateObs The current state of the game
    * @return The list of nodes that gets you to the end (or null if there is no path)
    */
-  ArrayList<Node> getPath(StateObservation stateObs, Vector2d startPos){
+  ArrayList<NodoAEstrella> getPath(StateObservation stateObs, Vector2d startPos){
     updateGoals(stateObs); // IMPORTANTE (!)
-    Node node = null;
-    PriorityQueue<Node> openList = new PriorityQueue<>();
-    PriorityQueue<Node> closedList = new PriorityQueue<>();
+    NodoAEstrella node = null;
+    PriorityQueue<NodoAEstrella> openList = new PriorityQueue<>();
+    PriorityQueue<NodoAEstrella> closedList = new PriorityQueue<>();
 
-    Node start = new Node(startPos);
+    NodoAEstrella start = new NodoAEstrella(stateObs);
     start.totalCost = 0.0f;
     start.estimatedCost = heuristicEstimatedCost(start);
 
@@ -187,10 +213,9 @@ class AEstrella {
       if(reachedGoal(node.position))
         return calculatePath(node);
 
-      // FIXME: No muestra vecinos con monstruos (que podrían no tenerlos en el futuro)
-      ArrayList<Node> neighbours = getNeighbours(node, stateObs);
+      ArrayList<NodoAEstrella> neighbours = getNeighbours(node);
 
-      for (Node neighbour : neighbours) {
+      for (NodoAEstrella neighbour : neighbours) {
         double curDistance = neighbour.totalCost;
 
         if (!openList.contains(neighbour) && !closedList.contains(neighbour)) {

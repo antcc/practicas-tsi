@@ -22,7 +22,7 @@ public class Agent extends BaseAgent {
 
   // Basic A* agent
   private AEstrella finder;
-  private ArrayList<Node> path = new ArrayList<>();
+  private ArrayList<NodoAEstrella> path = new ArrayList<>();
   private Vector2d ultimaPos;
   private Random randomGenerator = new Random();
 
@@ -58,7 +58,7 @@ public class Agent extends BaseAgent {
    * @return La acción para evitar el peligro
    */
   public Types.ACTIONS escape(StateObservation stateObs){
-    ArrayList<Node> vecinos2 = finder.getNeighbours(new Node(ultimaPos), stateObs);
+    ArrayList<NodoAEstrella> vecinos2 = finder.getNeighbours(new NodoAEstrella(stateObs));
 
     ArrayList<Node> vecinos = new ArrayList<>();
     for(Node vecino : vecinos2){
