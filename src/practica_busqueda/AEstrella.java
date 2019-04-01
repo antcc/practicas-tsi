@@ -68,7 +68,7 @@ class AEstrella {
     int y = (int) position.y;
 
     for (core.game.Observation obs : stateObs.getObservationGrid()[x][y])
-      if(obs.itype == 7 || obs.itype == 0 || obs.itype == 10 || obs.itype == 11)
+      if(obs.itype == 7 || obs.itype == 0)
         return false;
     return true;
     // FIXME: Esto comprueba que no esté muy cerca de un monstruo, aún así le atacan los monstruos. ¿Por qué?

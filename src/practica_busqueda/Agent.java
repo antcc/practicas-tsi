@@ -49,6 +49,15 @@ public class Agent extends BaseAgent {
   public boolean shouldEscape(StateObservation stateObs, Types.ACTIONS action){
     StateObservation newStateObs = stateObs.copy();
     newStateObs.advance(action);
+
+    Vector2d position = newStateObs.getAvatarPosition();
+    int x = (int) position.x / newStateObs.getBlockSize();
+    int y = (int) position.y / newStateObs.getBlockSize();
+
+    for (core.game.Observation obs : newStateObs.getObservationGrid()[x][y])
+      if(obs.itype == 10 || obs.itype == 11)
+        return true;
+
     return !newStateObs.isAvatarAlive();
   }
 
