@@ -11,9 +11,12 @@ import java.util.ArrayList;
 import java.util.PriorityQueue;
 
 class AEstrella {
+  public enum Objective {
+    GEMS, EXIT, ROCKS
+  }
   private static PathFinder pf; // A pathfinder (for the heuristic)
 
-  private boolean findExit; // If the current goal is to find the exit or the gems
+  private Objective curObjective;
   private ArrayList<practica_busqueda.Observation> goals; // The current list of goals
 
   AEstrella(StateObservation so){
@@ -24,7 +27,7 @@ class AEstrella {
     // Init pathfinder
     pf = new PathFinder(tiposObs);
     pf.run(so);
-    findExit = false; // Initially we look for gems
+    curObjective = Objective.GEMS;
     goals    = new ArrayList<>();
   }
 
@@ -34,32 +37,56 @@ class AEstrella {
    * MUST be called at the beginning of getPath.
    */
   private void updateGoals(StateObservation stateObs){
-    // Get list of goals as core.game.Observations
-    ArrayList<Observation> goalsCore;
-    if(findExit){
-      goalsCore = new ArrayList<>();
-      goalsCore.add(stateObs.getPortalsPositions(stateObs.getAvatarPosition())[0].get(0));
-    } else{
-      goalsCore = stateObs.getResourcesPositions(stateObs.getAvatarPosition())[0];
-    }
+    if(curObjective == Objective.ROCKS){
+      ArrayList<Observation> rockPositions = stateObs.getMovablePositions()[0];
 
-    // Update them as goals with game coordinates
-    goals.clear();
-    for(Observation goalCore : goalsCore)
-      goals.add(new practica_busqueda.Observation(goalCore,stateObs.getBlockSize()));
+      goals.clear();
+      for (Observation rockCore : rockPositions) {
+        practica_busqueda.Observation rock =
+          new practica_busqueda.Observation(rockCore, stateObs.getBlockSize());
+        rock.y = rock.y + 1;
+        if(isSafe(new Vector2d(rock.getX(), rock.getY()), stateObs))
+          goals.add(rock);
+      }
+
+      assert goals.size() > 0;
+    } else{
+      // Get list of goals as core.game.Observations
+      ArrayList<Observation> goalsCore;
+
+      if(curObjective == Objective.EXIT){
+        goalsCore = new ArrayList<>();
+        goalsCore.add(stateObs.getPortalsPositions(stateObs.getAvatarPosition())[0].get(0));
+      } else{ // GEMS
+        goalsCore = stateObs.getResourcesPositions(stateObs.getAvatarPosition())[0];
+      }
+
+      // Update them as goals with game coordinates
+      goals.clear();
+      for(Observation goalCore : goalsCore) {
+        practica_busqueda.Observation goal = new practica_busqueda.Observation(goalCore, stateObs.getBlockSize());
+        goals.add(goal);
+      }
+    }
   }
 
 
   /**
-   * Activates looking-for-exit mode
+   * Gets current objective
+   * @return The current objective
    */
-  void lookForExit(){
-    findExit = true;
+  Objective getObjective(){return curObjective;}
+
+  /**
+   * Changes current objective
+   */
+  void setObjective(Objective objective){
+    curObjective = objective;
   }
 
   /**
    * Checks if a position is safe
-   * @param position The position to check
+   * @param position The position to check (in world coordinates)
    * @param stateObs The current state observation
    * @return Whether `position` is safe
    */
@@ -145,7 +172,6 @@ class AEstrella {
 
   /**
    * Construct path from final node
-   * FIXME En búsqueda en estados es mejor devolver la lista de acciones directamente.
    * @param node The goal node
    * @return A list of nodes that gets you to the goal node
    */
@@ -168,6 +194,7 @@ class AEstrella {
    * @return The list of nodes that gets you to the end (or null if there is no path)
    */
   ArrayList<Node> getPath(StateObservation stateObs, Vector2d startPos){
+    System.out.println("[AEstrella.getPath] Objetivo: " +  curObjective);
     updateGoals(stateObs); // IMPORTANTE (!)
     Node node = null;
     PriorityQueue<Node> openList = new PriorityQueue<>();

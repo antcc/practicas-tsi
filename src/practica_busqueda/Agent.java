@@ -25,6 +25,7 @@ public class Agent extends BaseAgent {
   private ArrayList<Node> path = new ArrayList<>();
   private Vector2d ultimaPos;
   private Random randomGenerator = new Random();
+  private int waitForPath;
 
   public Agent(StateObservation so, ElapsedCpuTimer elapsedTimer) {
     super(so, elapsedTimer);
@@ -35,6 +36,7 @@ public class Agent extends BaseAgent {
     // Get last known position
     PlayerObservation player = getPlayer(so);
     ultimaPos = new Vector2d(player.getX(), player.getY());
+    waitForPath = 0;
   }
 
 
@@ -81,24 +83,28 @@ public class Agent extends BaseAgent {
       return Types.ACTIONS.ACTION_NIL;
     }
 
-    Node vecinoElegido = null;
+    int p = randomGenerator.nextInt(vecinos.size());
+    Node vecinoElegido = vecinos.get(p);
     ArrayList<core.game.Observation>[] npcPositions = stateObs.getNPCPositions();
-    double maxDist = Double.NEGATIVE_INFINITY;
-    for(Node vecino : vecinos){
-      double dist = 0;
-      for (ArrayList<core.game.Observation> npcs : npcPositions)
-        for(Observation npc : npcs)
-          dist += npc.position.dist(vecino.position);
-      if(maxDist < dist){
-        vecinoElegido = vecino;
-        maxDist = dist;
+
+    if(npcPositions != null) {
+      double maxDist = Double.NEGATIVE_INFINITY;
+      for (Node vecino : vecinos) {
+        double dist = 0;
+        for (ArrayList<core.game.Observation> npcs : npcPositions)
+          for (Observation npc : npcs)
+            dist += npc.position.dist(vecino.position);
+        if (maxDist < dist) {
+          vecinoElegido = vecino;
+          maxDist = dist;
+        }
       }
     }
 
 
-    //int p = randomGenerator.nextInt(vecinos.size());
     Types.ACTIONS action = getAction(ultimaPos, vecinoElegido.position);
-    path = null;
+    if(path != null)
+      path.clear();
     return action;
 
   }
@@ -134,7 +140,7 @@ public class Agent extends BaseAgent {
 
   // Basic A* agent act method
   @Override
-  public Types.ACTIONS act(StateObservation stateObs, ElapsedCpuTimer elapsedTimer) {
+  public Types.ACTIONS act(StateObservation stateObs, ElapsedCpuTimer elapsedTimer){
     // Set default action
     Types.ACTIONS action;
 
@@ -146,17 +152,30 @@ public class Agent extends BaseAgent {
     }
 
     if (ultimaPos.equals(new Vector2d(avatar.getX(), avatar.getY()))) {
-      //System.out.println("No se ha movido de " + ultimaPos);
+      //System.out.println("[act] No se ha movido de " + ultimaPos);
     }
 
     ultimaPos = new Vector2d(avatar.getX(), avatar.getY());
-    //System.out.println(ultimaPos);
+    //System.out.println("[act] " + ultimaPos);
+
 
     // Update path
-    if (path == null || path.isEmpty()) {
-      if (getNumGems(stateObs) == NUM_GEMS_FOR_EXIT)
-        finder.lookForExit();
-      path = finder.getPath(stateObs, ultimaPos);
+    if(path == null){ // No hemos encontrado camino; probamos a mover una roca
+      finder.setObjective(AEstrella.Objective.ROCKS);
+      path = finder.getPath(stateObs,ultimaPos);
+      waitForPath = 4; // Cuando se vacíe el path, esperamos 4 ticks a que la roca caiga
+    }
+    else if (path.isEmpty()) { // Hemos terminado de hacer el path actual
+      if (getNumGems(stateObs) < NUM_GEMS_FOR_EXIT)
+        finder.setObjective(AEstrella.Objective.GEMS);
+      else
+        finder.setObjective(AEstrella.Objective.EXIT);
+
+      if(waitForPath > 0) {
+        waitForPath--;
+        return escape(stateObs);
+      } else
+        path = finder.getPath(stateObs, ultimaPos);
     }
 
 
@@ -171,8 +190,14 @@ public class Agent extends BaseAgent {
       }
 
     } catch(IndexOutOfBoundsException|NullPointerException e) {
-      //System.err.println("El path está vacío: " + e);
+      System.err.println("[Agent.act] Path vacío: " + e);
       action = escape(stateObs);
+
+    }
+
+    try {
+      Thread.sleep(100);
+    } catch(Exception e){
 
     }
 
