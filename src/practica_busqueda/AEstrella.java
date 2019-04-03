@@ -16,8 +16,9 @@ class AEstrella {
   }
   private static PathFinder pf; // A pathfinder (for the heuristic)
 
-  private Objective curObjective;
+  private Objective curObjective; // The current objective
   private ArrayList<practica_busqueda.Observation> goals; // The current list of goals
+
 
   AEstrella(StateObservation so){
     ArrayList<Integer> tiposObs = new ArrayList<>();
@@ -31,6 +32,7 @@ class AEstrella {
     goals    = new ArrayList<>();
   }
 
+
   /**
    * Updates list of goals
    * @param stateObs
@@ -42,11 +44,12 @@ class AEstrella {
 
       goals.clear();
       for (Observation rockCore : rockPositions) {
-        practica_busqueda.Observation rock =
-          new practica_busqueda.Observation(rockCore, stateObs.getBlockSize());
-        rock.y = rock.y + 1;
-        if(isSafe(new Vector2d(rock.getX(), rock.getY()), stateObs))
-          goals.add(rock);
+        // Obten coordenadas bajo de la roca
+        int x = (int)(rockCore.position.x / stateObs.getBlockSize());
+        int y = (int)(rockCore.position.y / stateObs.getBlockSize()) + 1;
+
+        if(isSafe(new Vector2d(x,y), stateObs))
+          goals.add(new practica_busqueda.Observation(x,y, ObservationType.GROUND)); // El tipo es irrelevante
       }
 
       assert goals.size() > 0;
@@ -72,12 +75,6 @@ class AEstrella {
 
 
   /**
-   * Gets current objective
-   * @return The current objective
-   */
-  Objective getObjective(){return curObjective;}
-
-  /**
    * Changes current objective
    */
   void setObjective(Objective objective){
@@ -94,19 +91,17 @@ class AEstrella {
     int x = (int) position.x;
     int y = (int) position.y;
 
+    if(x == 4 && (y == 5 || y == 6)){
+      System.out.print("Observaciones en " + x + "," + y + ": [");
+      for (core.game.Observation obs : stateObs.getObservationGrid()[x][y])
+        System.out.print(obs.itype + " ");
+      System.out.println("]");
+    }
+
     for (core.game.Observation obs : stateObs.getObservationGrid()[x][y])
       if(obs.itype == 7 || obs.itype == 0)
         return false;
     return true;
-    // FIXME: Esto comprueba que no esté muy cerca de un monstruo, aún así le atacan los monstruos. ¿Por qué?
-    //ArrayList<Observation>[] npcPositions = stateObs.getNPCPositions();
-    //for (ArrayList<Observation> npcs : npcPositions)
-     // for(Observation npc : npcs){
-     //   if(npc.position.dist(position) <= 3*stateObs.getBlockSize()) { // Reformular en términos de observations de practica_busqueda?
-     //     return false;
-     //   }
-     // }
-    //return true;
   }
 
   /**
@@ -124,9 +119,11 @@ class AEstrella {
     int[] x_arrNeig = new int[]{0,    0,    -1,    1};
     int[] y_arrNeig = new int[]{-1,   1,     0,    0};
 
-    for(int i = 0; i < x_arrNeig.length; ++i)
-      if(isSafe(new Vector2d(x+x_arrNeig[i], y+y_arrNeig[i]), stateObs))
-        neighbours.add(new Node(new Vector2d(x+x_arrNeig[i], y+y_arrNeig[i])));
+    for(int i = 0; i < x_arrNeig.length; ++i) {
+      Vector2d neighbourPos = new Vector2d(x + x_arrNeig[i], y + y_arrNeig[i]);
+      if (isSafe(neighbourPos, stateObs))
+        neighbours.add(new Node(neighbourPos));
+    }
     return neighbours;
   }
 
@@ -206,35 +203,31 @@ class AEstrella {
 
     openList.add(start);
 
-    while(openList.size() != 0)
-    {
+    while(openList.size() != 0){
       node = openList.poll();
       closedList.add(node);
 
       if(reachedGoal(node.position))
         return calculatePath(node);
 
-      // FIXME: No muestra vecinos con monstruos (que podrían no tenerlos en el futuro)
       ArrayList<Node> neighbours = getNeighbours(node, stateObs);
 
       for (Node neighbour : neighbours) {
         double curDistance = neighbour.totalCost;
 
-        if (!openList.contains(neighbour) && !closedList.contains(neighbour)) {
+        if (!openList.contains(neighbour) && !closedList.contains(neighbour)){
           neighbour.totalCost = curDistance + node.totalCost;
           neighbour.estimatedCost = heuristicEstimatedCost(neighbour);
           neighbour.parent = node;
 
           openList.add(neighbour);
 
-        } else if (curDistance + node.totalCost < neighbour.totalCost) {
+        } else if (curDistance + node.totalCost < neighbour.totalCost){
           neighbour.totalCost = curDistance + node.totalCost;
           neighbour.parent = node;
 
           openList.remove(neighbour);
-
           closedList.remove(neighbour);
-
           openList.add(neighbour);
         }
       }
@@ -242,8 +235,10 @@ class AEstrella {
     }
 
     assert node != null;
-    if(!reachedGoal(node.position))
+    if(!reachedGoal(node.position)){
+      System.err.println("[getPath] No hay camino hacia " + curObjective);
       return null;
+    }
 
     return calculatePath(node);
 

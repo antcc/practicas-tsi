@@ -190,10 +190,11 @@ public class Agent extends BaseAgent {
       }
 
     } catch(IndexOutOfBoundsException|NullPointerException e) {
-      System.err.println("[Agent.act] Path vacío: " + e);
+      System.err.println("[act] Path vacío: " + e);
       action = escape(stateObs);
 
     }
+
 
     try {
       Thread.sleep(100);
