@@ -138,6 +138,24 @@ public class Agent extends BaseAgent {
     }
   }
 
+  /**
+   * Imprime dónde hay rocas
+   * @param stateObs
+   */
+  private void printRocas(StateObservation stateObs){
+    System.out.print("Rocas: [");
+    for(int x = 0; x < 12; x++){
+      for(int y = 0; y < 11; y++){
+        for(Observation obs : stateObs.getObservationGrid()[x][y]){
+          if(obs.itype == 7){
+            System.out.print(x + "," + y + " ");
+          }
+        }
+      }
+    }
+    System.out.println("]");
+  }
+
   // Basic A* agent act method
   @Override
   public Types.ACTIONS act(StateObservation stateObs, ElapsedCpuTimer elapsedTimer){
@@ -178,6 +196,7 @@ public class Agent extends BaseAgent {
         path = finder.getPath(stateObs, ultimaPos);
     }
 
+    printRocas(stateObs);
 
     // Calculate next action
     try {

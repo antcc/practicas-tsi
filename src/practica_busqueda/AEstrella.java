@@ -17,6 +17,7 @@ class AEstrella {
   private static PathFinder pf; // A pathfinder (for the heuristic)
 
   private Objective curObjective; // The current objective
+  // FIXME: Las goals podrían ser Vector2d
   private ArrayList<practica_busqueda.Observation> goals; // The current list of goals
 
 
@@ -90,13 +91,6 @@ class AEstrella {
   boolean isSafe(Vector2d position, StateObservation stateObs){
     int x = (int) position.x;
     int y = (int) position.y;
-
-    if(x == 4 && (y == 5 || y == 6)){
-      System.out.print("Observaciones en " + x + "," + y + ": [");
-      for (core.game.Observation obs : stateObs.getObservationGrid()[x][y])
-        System.out.print(obs.itype + " ");
-      System.out.println("]");
-    }
 
     for (core.game.Observation obs : stateObs.getObservationGrid()[x][y])
       if(obs.itype == 7 || obs.itype == 0)
