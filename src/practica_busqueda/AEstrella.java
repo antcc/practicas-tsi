@@ -11,14 +11,10 @@ import java.util.ArrayList;
 import java.util.PriorityQueue;
 
 class AEstrella {
-  public enum Objective {
-    GEMS, EXIT, ROCKS
-  }
+  public enum Objective {GEMS, EXIT, ROCKS} // Possible objectives
   private static PathFinder pf; // A pathfinder (for the heuristic)
-
   private Objective curObjective; // The current objective
-  // FIXME: Las goals podrían ser Vector2d
-  private ArrayList<practica_busqueda.Observation> goals; // The current list of goals
+  private ArrayList<Vector2d> goals; // The current list of goals
 
 
   AEstrella(StateObservation so){
@@ -30,7 +26,7 @@ class AEstrella {
     pf = new PathFinder(tiposObs);
     pf.run(so);
     curObjective = Objective.GEMS;
-    goals    = new ArrayList<>();
+    goals = new ArrayList<>();
   }
 
 
@@ -40,21 +36,20 @@ class AEstrella {
    * MUST be called at the beginning of getPath.
    */
   private void updateGoals(StateObservation stateObs){
+    goals.clear();
     if(curObjective == Objective.ROCKS){
       ArrayList<Observation> rockPositions = stateObs.getMovablePositions()[0];
 
-      goals.clear();
       for (Observation rockCore : rockPositions) {
-        // Obten coordenadas bajo de la roca
-        int x = (int)(rockCore.position.x / stateObs.getBlockSize());
-        int y = (int)(rockCore.position.y / stateObs.getBlockSize()) + 1;
+        Vector2d pos = new Vector2d(
+             (int) (rockCore.position.x / stateObs.getBlockSize()),
+          (int) (rockCore.position.y / stateObs.getBlockSize()) + 1);// debajo de la roca
 
-        if(isSafe(new Vector2d(x,y), stateObs))
-          goals.add(new practica_busqueda.Observation(x,y, ObservationType.GROUND)); // El tipo es irrelevante
+        if(isSafe(pos, stateObs))
+          goals.add(pos);
       }
-
-      assert goals.size() > 0;
-    } else{
+    }
+    else{
       // Get list of goals as core.game.Observations
       ArrayList<Observation> goalsCore;
 
@@ -66,10 +61,9 @@ class AEstrella {
       }
 
       // Update them as goals with game coordinates
-      goals.clear();
       for(Observation goalCore : goalsCore) {
         practica_busqueda.Observation goal = new practica_busqueda.Observation(goalCore, stateObs.getBlockSize());
-        goals.add(goal);
+        goals.add(new Vector2d(goal.getX(), goal.getY()));
       }
     }
   }
@@ -130,10 +124,7 @@ class AEstrella {
    * @return Whether the current position is the position of a goal
    */
   private boolean reachedGoal(Vector2d position){
-    for (practica_busqueda.Observation goal: goals)
-      if(goal.getX() == position.x && goal.getY() == position.y)
-        return true;
-    return false;
+    return goals.contains(position);
   }
 
   /**
@@ -144,13 +135,13 @@ class AEstrella {
   private double heuristicEstimatedCost(Node curNode){
     double cost = Double.POSITIVE_INFINITY;
 
-    for(practica_busqueda.Observation goal : goals){
-      ArrayList<Node> path = pf.getPath(curNode.position, new Vector2d(goal.getX(), goal.getY()));
+    for(Vector2d goal : goals){
+      ArrayList<Node> path = pf.getPath(curNode.position, goal);
 
       double pathCost;
       if(path == null) { // Pathfinder no encuentra camino
-        double xDiff = Math.abs(curNode.position.x - goal.getX());
-        double yDiff = Math.abs(curNode.position.y - goal.getY());
+        double xDiff = Math.abs(curNode.position.x - goal.x);
+        double yDiff = Math.abs(curNode.position.y - goal.y);
         pathCost = xDiff + yDiff; // FIXME: Sería mejor guiarse sólo por las alcanzables inicialmente si hay alguna
       } else {
         pathCost = path.size(); // FIXME: Ajustar por elementos peligrosos
@@ -187,6 +178,12 @@ class AEstrella {
   ArrayList<Node> getPath(StateObservation stateObs, Vector2d startPos){
     System.out.println("[AEstrella.getPath] Objetivo: " +  curObjective);
     updateGoals(stateObs); // IMPORTANTE (!)
+
+    if(goals.isEmpty()){
+      System.err.println("No hay metas para " + curObjective);
+      return null;
+    }
+
     Node node = null;
     PriorityQueue<Node> openList = new PriorityQueue<>();
     PriorityQueue<Node> closedList = new PriorityQueue<>();
