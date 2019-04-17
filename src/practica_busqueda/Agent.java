@@ -51,13 +51,20 @@ public class Agent extends BaseAgent {
     StateObservation newStateObs = stateObs.copy();
     newStateObs.advance(action);
 
+    //every direction
+    int[] x_arrNeig = new int[]{0,  0,   0,  -1,  1};
+    int[] y_arrNeig = new int[]{0,  -1,  1,   0,  0};
+
     Vector2d position = newStateObs.getAvatarPosition();
     int x = (int) position.x / newStateObs.getBlockSize();
     int y = (int) position.y / newStateObs.getBlockSize();
 
-    for (core.game.Observation obs : newStateObs.getObservationGrid()[x][y])
-      if(obs.itype == 10 || obs.itype == 11)
-        return true;
+    for(int i = 0; i < x_arrNeig.length; ++i) {
+    System.out.println(i);
+      for (core.game.Observation obs : newStateObs.getObservationGrid()[x + x_arrNeig[i]][y + y_arrNeig[i]])
+        if(obs.itype == 10 || obs.itype == 11)
+          return true;
+    }
 
     return !newStateObs.isAvatarAlive();
   }
@@ -224,7 +231,7 @@ public class Agent extends BaseAgent {
 
 
     try {
-      Thread.sleep(100);
+      Thread.sleep(200);
     } catch(Exception e){
 
     }
