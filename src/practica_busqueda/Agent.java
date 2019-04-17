@@ -39,7 +39,6 @@ public class Agent extends BaseAgent {
     waitForPath = 0;
   }
 
-
   /**
    * Indica si el jugador está en una situación de peligro en el camino actual
    * FIXME: Comprobar también monstruos cercanos?
@@ -73,6 +72,8 @@ public class Agent extends BaseAgent {
 
     ArrayList<Node> vecinos = new ArrayList<>();
     for(Node vecino : vecinos2){
+      System.out.println("[escape desde " + ultimaPos + "] " + vecino.position);
+      System.out.flush();
       if(!shouldEscape(stateObs, getAction(ultimaPos, vecino.position))){
         vecinos.add(vecino);
       }
@@ -100,7 +101,6 @@ public class Agent extends BaseAgent {
         }
       }
     }
-
 
     Types.ACTIONS action = getAction(ultimaPos, vecinoElegido.position);
     if(path != null)
@@ -143,16 +143,23 @@ public class Agent extends BaseAgent {
    * @param stateObs
    */
   private void printRocas(StateObservation stateObs){
-    System.out.print("Rocas: [");
-    for(int x = 0; x < 12; x++){
-      for(int y = 0; y < 11; y++){
-        for(Observation obs : stateObs.getObservationGrid()[x][y]){
-          if(obs.itype == 7){
-            System.out.print(x + "," + y + " ");
+    System.out.print("Rocas según getMovablePositions: [");
+    for(Observation obs : stateObs.getMovablePositions()[0]){
+      Vector2d position = new Vector2d((int) obs.position.x / stateObs.getBlockSize(), (int)obs.position.y / stateObs.getBlockSize());
+      System.out.print(position + ", ");
+    }
+    System.out.println("]");
+
+    System.out.print("Rocas según getObservationGrid: [");
+        for(int x = 0; x < 12; x++){
+          for(int y = 0; y < 11; y++){
+            for(Observation obs : stateObs.getObservationGrid()[x][y]){
+              if(obs.itype == 7){
+                System.out.print(x + ":" + y + ", ");
+              }
+            }
           }
         }
-      }
-    }
     System.out.println("]");
   }
 
@@ -174,7 +181,8 @@ public class Agent extends BaseAgent {
     }
 
     ultimaPos = new Vector2d(avatar.getX(), avatar.getY());
-    //System.out.println("[act] " + ultimaPos);
+    System.out.println("[act] Estoy en: " + ultimaPos);
+    System.out.flush();
 
 
     // Update path
@@ -202,16 +210,16 @@ public class Agent extends BaseAgent {
     try {
       Vector2d siguientePos = path.get(0).position;
 
-      if(!finder.isSafe(siguientePos, stateObs) || shouldEscape(stateObs,getAction(ultimaPos, siguientePos))) {
+      if(!finder.isSafe(siguientePos, stateObs) || shouldEscape(stateObs, getAction(ultimaPos, siguientePos))) {
         action = escape(stateObs);
       } else{
         action = getAction(ultimaPos, siguientePos);
       }
 
     } catch(IndexOutOfBoundsException|NullPointerException e) {
-      System.err.println("[act] Path vacío: " + e);
+      System.out.println("[act] Path vacío: " + e);
+      System.out.flush();
       action = escape(stateObs);
-
     }
 
 
@@ -222,6 +230,8 @@ public class Agent extends BaseAgent {
     }
 
 
+    System.out.println("[act] Realizada: " + action);
+    System.out.flush();
     return action;
   }
 }

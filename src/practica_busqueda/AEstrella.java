@@ -89,6 +89,22 @@ class AEstrella {
     for (core.game.Observation obs : stateObs.getObservationGrid()[x][y])
       if(obs.itype == 7 || obs.itype == 0)
         return false;
+
+    // Walls
+    /*for (core.game.Observation obs : stateObs.getImmovablePositions()[0]) {
+      practica_busqueda.Observation newObs = new practica_busqueda.Observation(obs, stateObs.getBlockSize());
+      if (newObs.getX() == x && newObs.getY() == y)
+        return false;
+    }
+
+    // Rocks
+    for (core.game.Observation obs : stateObs.getMovablePositions()[0]) {
+      practica_busqueda.Observation newObs = new practica_busqueda.Observation(obs, stateObs.getBlockSize());
+      System.out.println("[isSafe] Roca en : " + newObs.getX() + "," + newObs.getY());
+      if (newObs.getX() == x && newObs.getY() == y)
+        return false;
+    }*/
+
     return true;
   }
 
