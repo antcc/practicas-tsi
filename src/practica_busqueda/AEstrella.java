@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.PriorityQueue;
 
 class AEstrella {
-  public enum Objective {GEMS, EXIT, ROCKS} // Possible objectives
   private static PathFinder pf; // A pathfinder (for the heuristic)
   private Objective curObjective; // The current objective
   private ArrayList<Vector2d> goals; // The current list of goals
@@ -68,13 +67,6 @@ class AEstrella {
     }
   }
 
-
-  /**
-   * Changes current objective
-   */
-  void setObjective(Objective objective){
-    curObjective = objective;
-  }
 
   /**
    * Checks if a position is safe
@@ -135,15 +127,6 @@ class AEstrella {
   /* Funciones para A */
 
   /**
-   * Checks if goal has been reached
-   * @param position The current position
-   * @return Whether the current position is the position of a goal
-   */
-  private boolean reachedGoal(Vector2d position){
-    return goals.contains(position);
-  }
-
-  /**
    * Heuristic function
    * @param curNode The current node
    * @return An estimation of the cost to reach the current goal
@@ -189,9 +172,12 @@ class AEstrella {
    * getPath towards the goal using A* algorithm
    * @param startPos The starting position
    * @param stateObs The current state of the game
+   * @param objective The current objective
    * @return The list of nodes that gets you to the end (or null if there is no path)
    */
-  ArrayList<Node> getPath(StateObservation stateObs, Vector2d startPos){
+  ArrayList<Node> getPath(StateObservation stateObs, Vector2d startPos, Objective objective){
+    curObjective = objective;
+
     System.out.println("[AEstrella.getPath] Objetivo: " +  curObjective);
     updateGoals(stateObs); // IMPORTANTE (!)
 
@@ -214,7 +200,7 @@ class AEstrella {
       node = openList.poll();
       closedList.add(node);
 
-      if(reachedGoal(node.position))
+      if(goals.contains(node.position))
         return calculatePath(node);
 
       ArrayList<Node> neighbours = getNeighbours(node, stateObs);
@@ -242,7 +228,7 @@ class AEstrella {
     }
 
     assert node != null;
-    if(!reachedGoal(node.position)){
+    if(!goals.contains(node.position)){
       System.err.println("[getPath] No hay camino hacia " + curObjective);
       return null;
     }

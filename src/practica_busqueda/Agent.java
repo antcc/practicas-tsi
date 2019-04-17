@@ -151,8 +151,8 @@ public class Agent extends BaseAgent {
     System.out.println("]");
 
     System.out.print("Rocas según getObservationGrid: [");
-        for(int x = 0; x < 12; x++){
-          for(int y = 0; y < 11; y++){
+        for(int x = 0; x < stateObs.getObservationGrid().length; x++){
+          for(int y = 0; y < stateObs.getObservationGrid()[x].length; y++){
             for(Observation obs : stateObs.getObservationGrid()[x][y]){
               if(obs.itype == 7){
                 System.out.print(x + ":" + y + ", ");
@@ -187,21 +187,17 @@ public class Agent extends BaseAgent {
 
     // Update path
     if(path == null){ // No hemos encontrado camino; probamos a mover una roca
-      finder.setObjective(AEstrella.Objective.ROCKS);
-      path = finder.getPath(stateObs,ultimaPos);
+      path = finder.getPath(stateObs,ultimaPos, Objective.ROCKS);
       waitForPath = 4; // Cuando se vacíe el path, esperamos 4 ticks a que la roca caiga
     }
     else if (path.isEmpty()) { // Hemos terminado de hacer el path actual
-      if (getNumGems(stateObs) < NUM_GEMS_FOR_EXIT)
-        finder.setObjective(AEstrella.Objective.GEMS);
-      else
-        finder.setObjective(AEstrella.Objective.EXIT);
-
-      if(waitForPath > 0) {
-        waitForPath--;
+      if(waitForPath-- > 0) // Espera
         return escape(stateObs);
-      } else
-        path = finder.getPath(stateObs, ultimaPos);
+      else { // ve hacia objetivo
+        Objective objective =
+          getNumGems(stateObs) < NUM_GEMS_FOR_EXIT ? Objective.GEMS : Objective.EXIT;
+        path = finder.getPath(stateObs, ultimaPos, objective);
+      }
     }
 
     printRocas(stateObs);
