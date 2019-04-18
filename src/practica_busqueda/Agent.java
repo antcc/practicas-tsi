@@ -47,20 +47,21 @@ public class Agent extends BaseAgent {
    * @param stateObs The current state
    * @return Si está en peligro
    */
-  public boolean shouldEscape(StateObservation stateObs, Types.ACTIONS action){
+  public boolean shouldEscape(StateObservation stateObs, Types.ACTIONS action,
+                              int[] x_arrNeig, int[] y_arrNeig){
     StateObservation newStateObs = stateObs.copy();
     newStateObs.advance(action);
-
-    //every direction
-    int[] x_arrNeig = new int[]{0,  0,   0,  -1,  1};
-    int[] y_arrNeig = new int[]{0,  -1,  1,   0,  0};
 
     Vector2d position = newStateObs.getAvatarPosition();
     int x = (int) position.x / newStateObs.getBlockSize();
     int y = (int) position.y / newStateObs.getBlockSize();
 
+    // position = (0,0) iff we are dead
+    if (x == 0 || y == 0) {
+      return true;
+    }
+
     for(int i = 0; i < x_arrNeig.length; ++i) {
-    System.out.println(i);
       for (core.game.Observation obs : newStateObs.getObservationGrid()[x + x_arrNeig[i]][y + y_arrNeig[i]])
         if(obs.itype == 10 || obs.itype == 11)
           return true;
@@ -78,15 +79,30 @@ public class Agent extends BaseAgent {
     ArrayList<Node> vecinos2 = finder.getNeighbours(new Node(ultimaPos), stateObs);
 
     ArrayList<Node> vecinos = new ArrayList<>();
-    for(Node vecino : vecinos2){
-      System.out.println("[escape desde " + ultimaPos + "] " + vecino.position);
-      System.out.flush();
-      if(!shouldEscape(stateObs, getAction(ultimaPos, vecino.position))){
-        vecinos.add(vecino);
+
+    // self, up, down, left, right
+    int[] x_arrNeig = new int[]{0,  0,   0,  -1,  1};
+    int[] y_arrNeig = new int[]{0,  -1,  1,   0,  0};
+
+    for (int i = 0; i < 2; i++) {
+      System.out.println(i);
+      for(Node vecino : vecinos2){
+        //System.out.println("[escape desde " + ultimaPos + "] " + vecino.position);
+        if(!shouldEscape(stateObs, getAction(ultimaPos, vecino.position), x_arrNeig, y_arrNeig)){
+          vecinos.add(vecino);
+        }
+      }
+
+      if(vecinos.isEmpty()){
+        x_arrNeig = new int[]{0};
+        y_arrNeig = new int[]{0};
+      }
+      else {
+        break;
       }
     }
 
-    if(vecinos.isEmpty()){
+    if (vecinos.isEmpty()) {
       System.out.println("No se encontró ninguna ruta de escape desde " + ultimaPos);
       return Types.ACTIONS.ACTION_NIL;
     }
@@ -188,9 +204,7 @@ public class Agent extends BaseAgent {
     }
 
     ultimaPos = new Vector2d(avatar.getX(), avatar.getY());
-    System.out.println("[act] Estoy en: " + ultimaPos);
-    System.out.flush();
-
+    //System.out.println("[act] Estoy en: " + ultimaPos);
 
     // Update path
     if(path == null){ // No hemos encontrado camino; probamos a mover una roca
@@ -207,13 +221,17 @@ public class Agent extends BaseAgent {
       }
     }
 
-    printRocas(stateObs);
+    //printRocas(stateObs);
 
     // Calculate next action
     try {
       Vector2d siguientePos = path.get(0).position;
 
-      if(!finder.isSafe(siguientePos, stateObs) || shouldEscape(stateObs, getAction(ultimaPos, siguientePos))) {
+      // self, up, down, left, right
+      int[] x_arrNeig = new int[]{0,  0,   0,  -1,  1};
+      int[] y_arrNeig = new int[]{0,  -1,  1,   0,  0};
+
+      if(!finder.isSafe(siguientePos, stateObs) || shouldEscape(stateObs, getAction(ultimaPos, siguientePos), x_arrNeig, y_arrNeig)) {
         action = escape(stateObs);
       } else{
         action = getAction(ultimaPos, siguientePos);
@@ -221,7 +239,6 @@ public class Agent extends BaseAgent {
 
     } catch(IndexOutOfBoundsException|NullPointerException e) {
       System.out.println("[act] Path vacío: " + e);
-      System.out.flush();
       action = escape(stateObs);
     }
 
@@ -233,8 +250,7 @@ public class Agent extends BaseAgent {
     }
 
 
-    System.out.println("[act] Realizada: " + action);
-    System.out.flush();
+    //System.out.println("[act] Realizada: " + action);
     return action;
   }
 }
