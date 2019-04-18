@@ -12,7 +12,6 @@ import java.util.PriorityQueue;
 
 class AEstrella {
   private static PathFinder pf; // A pathfinder (for the heuristic)
-  private Objective curObjective; // The current objective
   private ArrayList<Vector2d> goals; // The current list of goals
 
 
@@ -24,7 +23,6 @@ class AEstrella {
     // Init pathfinder
     pf = new PathFinder(tiposObs);
     pf.run(so);
-    curObjective = Objective.GEMS;
     goals = new ArrayList<>();
   }
 
@@ -34,9 +32,9 @@ class AEstrella {
    * @param stateObs
    * MUST be called at the beginning of getPath.
    */
-  private void updateGoals(StateObservation stateObs){
+  private void updateGoals(StateObservation stateObs, Objective objective){
     goals.clear();
-    if(curObjective == Objective.ROCKS){
+    if(objective == Objective.ROCKS){
       ArrayList<Observation> rockPositions = stateObs.getMovablePositions()[0];
 
       for (Observation rockCore : rockPositions) {
@@ -52,7 +50,7 @@ class AEstrella {
       // Get list of goals as core.game.Observations
       ArrayList<Observation> goalsCore;
 
-      if(curObjective == Objective.EXIT){
+      if(objective == Objective.EXIT){
         goalsCore = new ArrayList<>();
         goalsCore.add(stateObs.getPortalsPositions(stateObs.getAvatarPosition())[0].get(0));
       } else{ // GEMS
@@ -176,13 +174,12 @@ class AEstrella {
    * @return The list of nodes that gets you to the end (or null if there is no path)
    */
   ArrayList<Node> getPath(StateObservation stateObs, Vector2d startPos, Objective objective){
-    curObjective = objective;
 
-    System.out.println("[AEstrella.getPath] Objetivo: " +  curObjective);
-    updateGoals(stateObs); // IMPORTANTE (!)
+    System.out.println("[AEstrella.getPath] Objetivo: " +  objective);
+    updateGoals(stateObs, objective); // IMPORTANTE (!)
 
     if(goals.isEmpty()){
-      System.err.println("No hay metas para " + curObjective);
+      System.err.println("No hay metas para " + objective);
       return null;
     }
 
@@ -229,7 +226,7 @@ class AEstrella {
 
     assert node != null;
     if(!goals.contains(node.position)){
-      System.err.println("[getPath] No hay camino hacia " + curObjective);
+      System.err.println("[getPath] No hay camino hacia " + objective);
       return null;
     }
 
