@@ -13,7 +13,7 @@ import java.util.PriorityQueue;
 class AEstrella {
   private static PathFinder pf; // A pathfinder (for the heuristic)
   private ArrayList<Vector2d> goals; // The current list of goals
-
+  private final static boolean DEBUG = false;
 
   AEstrella(StateObservation so){
     ArrayList<Integer> tiposObs = new ArrayList<>();
@@ -212,11 +212,11 @@ class AEstrella {
    */
   ArrayList<Node> getPath(StateObservation stateObs, Vector2d startPos, Objective objective){
 
-    System.out.println("[AEstrella.getPath] Objetivo: " +  objective);
+    if(DEBUG) System.out.println("[AEstrella.getPath] Objetivo: " +  objective);
     updateGoals(stateObs, objective); // IMPORTANTE (!)
 
     if(goals.isEmpty()){
-      System.err.println("No hay metas para " + objective);
+      if(DEBUG) System.err.println("No hay metas para " + objective);
       return null;
     }
 
@@ -263,7 +263,7 @@ class AEstrella {
 
     assert node != null;
     if(!goals.contains(node.position)){
-      System.err.println("[getPath] No hay camino hacia " + objective);
+      if(DEBUG) System.err.println("[getPath] No hay camino hacia " + objective);
       return null;
     }
 

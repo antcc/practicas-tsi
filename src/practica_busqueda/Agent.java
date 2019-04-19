@@ -3,7 +3,6 @@ package practica_busqueda;
 // General java imports
 import java.util.ArrayList;
 import java.util.Random;
-import java.util.Comparator;
 
 // General game imports
 import core.game.Observation;
@@ -23,10 +22,25 @@ public class Agent extends BaseAgent {
 
   // Basic A* agent
   private AEstrella finder;
+
+  // Current path
   private ArrayList<Node> path = new ArrayList<>();
+
+  // Last position
   private Vector2d ultimaPos;
-  private Random randomGenerator = new Random();
+
+  // How many turns in the same position so far
+  private int isInLoop;
+
+  // How many turns to wait until creating path
   private int waitForPath;
+
+  // RNG
+  private Random randomGenerator = new Random();
+
+  // FIXME Borrar DEBUGs
+  private final static boolean DEBUG = false;
+
 
   public Agent(StateObservation so, ElapsedCpuTimer elapsedTimer) {
     super(so, elapsedTimer);
@@ -38,6 +52,7 @@ public class Agent extends BaseAgent {
     PlayerObservation player = getPlayer(so);
     ultimaPos = new Vector2d(player.getX(), player.getY());
     waitForPath = 0;
+    isInLoop = 0;
   }
 
   /**
@@ -48,8 +63,8 @@ public class Agent extends BaseAgent {
    * @param stateObs The current state
    * @return Si está en peligro
    */
-  public boolean shouldEscape(StateObservation stateObs, Types.ACTIONS action,
-                              int[] x_arrNeig, int[] y_arrNeig){
+  private boolean shouldEscape(StateObservation stateObs, Types.ACTIONS action,
+                               int[] x_arrNeig, int[] y_arrNeig){
     StateObservation newStateObs = stateObs.copy();
     newStateObs.advance(action);
 
@@ -88,7 +103,7 @@ public class Agent extends BaseAgent {
     for (int i = 0; i < 2; i++) {
       for(Node vecino : vecinos2){
         if(!shouldEscape(stateObs, getAction(ultimaPos, vecino.position), x_arrNeig, y_arrNeig)){
-          System.out.println("[escape desde " + ultimaPos + "] " + vecino.position);
+          if(DEBUG) System.out.println("[escape desde " + ultimaPos + "] " + vecino.position);
           vecinos.add(vecino);
         }
       }
@@ -103,32 +118,28 @@ public class Agent extends BaseAgent {
     }
 
     if (vecinos.isEmpty()) {
-      System.out.println("No se encontró ninguna ruta de escape desde " + ultimaPos);
+      if(DEBUG) System.out.println("No se encontró ninguna ruta de escape desde " + ultimaPos);
       return Types.ACTIONS.ACTION_NIL;
     }
 
     ArrayList<core.game.Observation>[] npcPositions = stateObs.getNPCPositions();
 
     // Sort safe neighbors by distance to all nearby monsters
-    vecinos.sort(new Comparator<Node>() {
-  		@Override
-  		public int compare(Node n1, Node n2) {
-        double dist1 = 0;
-        double dist2 = 0;
-        if(npcPositions != null) {
-          for (ArrayList<core.game.Observation> npcs : npcPositions) {
-            for (Observation npc : npcs) {
-              if (npc.position.dist(n1.position) < 6) // Umbral de distancia
-                dist1 += Math.exp(-1.0 * npc.position.dist(n1.position));
-              if (npc.position.dist(n2.position) < 6)
-                dist2 += Math.exp(-1.0 * npc.position.dist(n2.position));
-            }
+    vecinos.sort((n1, n2) -> {
+      double dist1 = 0, dist2 = 0;
+      if(npcPositions != null) {
+        for (ArrayList<Observation> npcs : npcPositions) {
+          for (Observation npc : npcs) {
+            if (npc.position.dist(n1.position) < 6) // Umbral de distancia
+              dist1 += -npc.position.dist(n1.position);
+            if (npc.position.dist(n2.position) < 6)
+              dist2 += -npc.position.dist(n2.position);
           }
         }
-        double diff = dist1 - dist2;
-        return (int) diff;
-  		}
-	  });
+      }
+      double diff = dist1 - dist2;
+      return (int) diff;
+    });
 
     PlayerObservation avatar = getPlayer(stateObs);
 
@@ -149,7 +160,7 @@ public class Agent extends BaseAgent {
       vecinoElegido = vecinos.get(p);
     }
 
-    System.out.println("[vecinoElegido] "+ vecinoElegido.position);
+    if(DEBUG) System.out.println("[vecinoElegido] "+ vecinoElegido.position);
 
     Types.ACTIONS action = getAction(ultimaPos, vecinoElegido.position);
     if(path != null)
@@ -189,12 +200,14 @@ public class Agent extends BaseAgent {
 
   /**
    * Imprime dónde hay rocas
-   * @param stateObs
+   * FIXME Borrar
+   * @param stateObs Current state of the game
    */
   private void printRocas(StateObservation stateObs){
     System.out.print("Rocas según getMovablePositions: [");
     for(Observation obs : stateObs.getMovablePositions()[0]){
-      Vector2d position = new Vector2d((int) obs.position.x / stateObs.getBlockSize(), (int)obs.position.y / stateObs.getBlockSize());
+      Vector2d position =
+        new Vector2d((int) obs.position.x / stateObs.getBlockSize(),(int)obs.position.y / stateObs.getBlockSize());
       System.out.print(position + ", ");
     }
     System.out.println("]");
@@ -215,7 +228,6 @@ public class Agent extends BaseAgent {
   // Basic A* agent act method
   @Override
   public Types.ACTIONS act(StateObservation stateObs, ElapsedCpuTimer elapsedTimer){
-    // Set default action
     Types.ACTIONS action;
 
     // Get current position and clear path if needed
@@ -226,8 +238,15 @@ public class Agent extends BaseAgent {
     }
 
     if (ultimaPos.equals(new Vector2d(avatar.getX(), avatar.getY()))) {
-      System.out.println("[act] No se ha movido de " + ultimaPos);
+      isInLoop++;
+      if(isInLoop > 5){
+        if(DEBUG) System.out.println("En bucle durante " + isInLoop + " turnos.");
+        // FIXME: ¿Qué hacer en este caso?
+      }
+    }else {
+      isInLoop = 0;
     }
+
 
     ultimaPos = new Vector2d(avatar.getX(), avatar.getY());
     //System.out.println("[act] Estoy en: " + ultimaPos);
@@ -264,19 +283,18 @@ public class Agent extends BaseAgent {
       }
 
     } catch(IndexOutOfBoundsException|NullPointerException e) {
-      System.out.println("[act] Path vacío: " + e);
+      if(DEBUG) System.out.println("[act] Path vacío: " + e);
       action = escape(stateObs);
     }
 
 
-    try {
-      Thread.sleep(100);
-    } catch(Exception e){
-
+    if(DEBUG) {
+      try {
+        Thread.sleep(100);
+      } catch (Exception ignored) {}
     }
 
-
-    System.out.println("[act] Realizada: " + action);
+    if(DEBUG) System.out.println("[act] Realizada: " + action);
     return action;
   }
 }
