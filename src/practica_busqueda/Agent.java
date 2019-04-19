@@ -63,7 +63,7 @@ public class Agent extends BaseAgent {
 
       if (newX >= 0 && newX < stateObs.getObservationGrid().length
           && newY >= 0 && newY < stateObs.getObservationGrid()[newX].length)
-        for (core.game.Observation obs : newStateObs.getObservationGrid()[x + x_arrNeig[i]][y + y_arrNeig[i]])
+        for (core.game.Observation obs : newStateObs.getObservationGrid()[newX][newY])
           if(obs.itype == 10 || obs.itype == 11)
             return true;
     }
@@ -82,20 +82,18 @@ public class Agent extends BaseAgent {
     ArrayList<Node> vecinos = new ArrayList<>();
 
     // self, up, down, left, right
-    /*int[] x_arrNeig = new int[]{0, 1, -1, 0, 0};
-    int[] y_arrNeig = new int[]{0, 0, 0, 1, -1};*/
-    int[] x_arrNeig = new int[]{0};
-    int[] y_arrNeig = new int[]{0};
+    int[] x_arrNeig = new int[]{0, 1, -1, 0, 0};
+    int[] y_arrNeig = new int[]{0, 0, 0, 1, -1};
 
     for (int i = 0; i < 2; i++) {
       for(Node vecino : vecinos2){
-        System.out.println("[escape desde " + ultimaPos + "] " + vecino.position);
         if(!shouldEscape(stateObs, getAction(ultimaPos, vecino.position), x_arrNeig, y_arrNeig)){
+          System.out.println("[escape desde " + ultimaPos + "] " + vecino.position);
           vecinos.add(vecino);
         }
       }
 
-      if(vecinos.isEmpty()){
+      if(vecinos.isEmpty()){ // Intentar una segunda vuelta sin tantas restricciones
         x_arrNeig = new int[]{0};
         y_arrNeig = new int[]{0};
       }
@@ -109,8 +107,6 @@ public class Agent extends BaseAgent {
       return Types.ACTIONS.ACTION_NIL;
     }
 
-    int p = randomGenerator.nextInt(vecinos.size());
-    Node vecinoElegido = null; /*vecinos.get(p);*/
     ArrayList<core.game.Observation>[] npcPositions = stateObs.getNPCPositions();
 
     // Sort safe neighbors by distance to all nearby monsters
@@ -134,14 +130,26 @@ public class Agent extends BaseAgent {
   		}
 	  });
 
+    PlayerObservation avatar = getPlayer(stateObs);
+
+    Node vecinoElegido = null;
     for (Node vecino : vecinos) {
-      if (vecino.position.dist(ultimaPos) > 0)
-        vecinoElegido = vecino;
+      StateObservation newStateObs = stateObs.copy();
+      newStateObs.advance(getAction(ultimaPos, vecino.position));
+      PlayerObservation newAvatar = getPlayer(newStateObs);
+      if (newAvatar.getOrientation() == avatar.getOrientation()) {
+        vecinoElegido = vecino; // Solo puede haber uno que se mueva de casilla
         break;
+      }
     }
 
-    if (vecinoElegido == null)
-      vecinoElegido = vecinos.get(0);
+    if (vecinoElegido == null) {
+      // Elegir aleatoriamente entre los dos mejores vecinos
+      int p = randomGenerator.nextInt(vecinos.size() > 2 ? 2 : vecinos.size());
+      vecinoElegido = vecinos.get(p);
+    }
+
+    System.out.println("[vecinoElegido] "+ vecinoElegido.position);
 
     Types.ACTIONS action = getAction(ultimaPos, vecinoElegido.position);
     if(path != null)
@@ -224,12 +232,6 @@ public class Agent extends BaseAgent {
     ultimaPos = new Vector2d(avatar.getX(), avatar.getY());
     //System.out.println("[act] Estoy en: " + ultimaPos);
 
-    // self, up, down, left, right
-    /*int[] x_arrNeig = new int[]{0, 1, -1, 0, 0};
-    int[] y_arrNeig = new int[]{0, 0, 0, 1, -1};*/
-    int[] x_arrNeig = new int[]{0};
-    int[] y_arrNeig = new int[]{0};
-
     // Update path
     if(path == null){ // No hemos encontrado camino; probamos a mover una roca
       path = finder.getPath(stateObs,ultimaPos, Objective.ROCKS);
@@ -246,6 +248,10 @@ public class Agent extends BaseAgent {
     }
 
     //printRocas(stateObs);
+
+    // self, up, down, left, right
+    int[] x_arrNeig = new int[]{0, 1, -1, 0, 0};
+    int[] y_arrNeig = new int[]{0, 0, 0, 1, -1};
 
     // Calculate next action
     try {
