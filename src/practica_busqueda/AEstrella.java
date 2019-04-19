@@ -80,20 +80,34 @@ class AEstrella {
       if(obs.itype == 7 || obs.itype == 0)
         return false;
 
+    return true;
+  }
+
+  /**
+   * Checks if a position is safe
+   * @param position The position to check (in world coordinates)
+   * @param stateObs The current state observation
+   * @return Whether `position` is safe
+   */
+  boolean isSafe2(Vector2d position, StateObservation stateObs){
+    int x = (int) position.x;
+    int y = (int) position.y;
+
     // Walls
-    /*for (core.game.Observation obs : stateObs.getImmovablePositions()[0]) {
+    for (core.game.Observation obs : stateObs.getImmovablePositions()[0]) {
       practica_busqueda.Observation newObs = new practica_busqueda.Observation(obs, stateObs.getBlockSize());
       if (newObs.getX() == x && newObs.getY() == y)
         return false;
     }
 
     // Rocks
-    for (core.game.Observation obs : stateObs.getMovablePositions()[0]) {
-      practica_busqueda.Observation newObs = new practica_busqueda.Observation(obs, stateObs.getBlockSize());
-      System.out.println("[isSafe] Roca en : " + newObs.getX() + "," + newObs.getY());
-      if (newObs.getX() == x && newObs.getY() == y)
-        return false;
-    }*/
+    if (stateObs.getMovablePositions() != null) {
+      for (core.game.Observation obs : stateObs.getMovablePositions()[0]) {
+        practica_busqueda.Observation newObs = new practica_busqueda.Observation(obs, stateObs.getBlockSize());
+        if (newObs.getX() == x && newObs.getY() == y)
+          return false;
+      }
+    }
 
     return true;
   }
@@ -116,6 +130,29 @@ class AEstrella {
     for(int i = 0; i < x_arrNeig.length; ++i) {
       Vector2d neighbourPos = new Vector2d(x + x_arrNeig[i], y + y_arrNeig[i]);
       if (isSafe(neighbourPos, stateObs))
+        neighbours.add(new Node(neighbourPos));
+    }
+    return neighbours;
+  }
+
+  /**
+   * Get (reachable) neighbors from a node
+   * @param node Node to build the neighbor list from
+   * @param stateObs The current state of the game
+   * @return An ArrayList of reachable neighbors
+   */
+  ArrayList<Node> getNeighbours2(Node node, StateObservation stateObs) {
+    ArrayList<Node> neighbours = new ArrayList<>();
+    int x = (int) node.position.x;
+    int y = (int) node.position.y;
+
+    //up, down, left, right
+    int[] x_arrNeig = new int[]{0,    0,    -1,    1};
+    int[] y_arrNeig = new int[]{-1,   1,     0,    0};
+
+    for(int i = 0; i < x_arrNeig.length; ++i) {
+      Vector2d neighbourPos = new Vector2d(x + x_arrNeig[i], y + y_arrNeig[i]);
+      if (isSafe2(neighbourPos, stateObs))
         neighbours.add(new Node(neighbourPos));
     }
     return neighbours;
