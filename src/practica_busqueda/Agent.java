@@ -230,6 +230,10 @@ public class Agent extends BaseAgent {
   public Types.ACTIONS act(StateObservation stateObs, ElapsedCpuTimer elapsedTimer){
     Types.ACTIONS action;
 
+    // self, up, down, left, right
+    int[] x_arrNeig = new int[]{0, 1, -1, 0, 0};
+    int[] y_arrNeig = new int[]{0, 0, 0, 1, -1};
+
     // Get current position and clear path if needed
     PlayerObservation avatar = getPlayer(stateObs);
     if (((avatar.getX() != ultimaPos.x) || (avatar.getY() != ultimaPos.y))
@@ -241,7 +245,8 @@ public class Agent extends BaseAgent {
       isInLoop++;
       if(isInLoop > 5){
         if(DEBUG) System.out.println("En bucle durante " + isInLoop + " turnos.");
-        // FIXME: ¿Qué hacer en este caso?
+        x_arrNeig = new int[]{0};
+        y_arrNeig = new int[]{0};
       }
     }else {
       isInLoop = 0;
@@ -267,10 +272,6 @@ public class Agent extends BaseAgent {
     }
 
     //printRocas(stateObs);
-
-    // self, up, down, left, right
-    int[] x_arrNeig = new int[]{0, 1, -1, 0, 0};
-    int[] y_arrNeig = new int[]{0, 0, 0, 1, -1};
 
     // Calculate next action
     try {
