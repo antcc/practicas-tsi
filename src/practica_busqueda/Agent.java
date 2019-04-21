@@ -39,7 +39,7 @@ public class Agent extends BaseAgent {
   private Random randomGenerator = new Random();
 
   // FIXME Borrar DEBUGs
-  private final static boolean DEBUG = true;
+  private final static boolean DEBUG = false;
 
 
   public Agent(StateObservation so, ElapsedCpuTimer elapsedTimer) {
@@ -266,9 +266,9 @@ public class Agent extends BaseAgent {
   public Types.ACTIONS act(StateObservation stateObs, ElapsedCpuTimer elapsedTimer){
     Types.ACTIONS action;
 
-    // self, up, down, left, right
-    int[] x_arrNeig = new int[]{0, 1, -1, 0, 0};
-    int[] y_arrNeig = new int[]{0, 0, 0, 1, -1};
+    // self, up, down, left, right and diagonals
+    int[] x_arrNeig = new int[]{0, 1, -1, 0, 0, 1, -1,  1, -1};
+    int[] y_arrNeig = new int[]{0, 0, 0, 1, -1, 1, -1, -1, 1};
 
     // Get current position and clear path if needed
     PlayerObservation avatar = getPlayer(stateObs);
