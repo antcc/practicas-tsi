@@ -166,7 +166,7 @@ class AEstrella {
    * @param curNode The current node
    * @return An estimation of the cost to reach the current goal
    */
-  private double heuristicEstimatedCost(Node curNode){
+  private double heuristicEstimatedCost(Node curNode, StateObservation stateObs){
     double cost = Double.POSITIVE_INFINITY;
 
     for(Vector2d goal : goals){
@@ -178,8 +178,35 @@ class AEstrella {
         double yDiff = Math.abs(curNode.position.y - goal.y);
         pathCost = xDiff + yDiff; // FIXME: Sería mejor guiarse sólo por las alcanzables inicialmente si hay alguna
       } else {
-        pathCost = path.size(); // FIXME: Ajustar por elementos peligrosos
+        pathCost = path.size();
+
+        // self, up, down, left, right
+        int[] x_arrNeig = new int[]{0, 1, -1, 0, 0};
+        int[] y_arrNeig = new int[]{0, 0, 0, 1, -1};
+
+        // Adjust cost taking into account enemies in path
+        for (Node tile : path) {
+          int x = (int) tile.position.x;
+          int y = (int) tile.position.y;
+
+          for (int i = 0; i < x_arrNeig.length; ++i) {
+            int newX = x + x_arrNeig[i];
+            int newY = y + y_arrNeig[i];
+
+            if (newX >= 0 && newX < stateObs.getObservationGrid().length
+                && newY >= 0 && newY < stateObs.getObservationGrid()[newX].length)
+              for (core.game.Observation obs : stateObs.getObservationGrid()[newX][newY])
+                if(obs.itype == 10 || obs.itype == 11)
+                  pathCost += 10; // FIXME: ajustar valor
+          }
+
+          // Adjust cost taking into account falling rocks (somewhat)
+          for (core.game.Observation obs : stateObs.getObservationGrid()[x][y - 1])
+            if(obs.itype == 7)
+              pathCost += 0; // FIXME: ajustar valor
+        }
       }
+
       cost = Math.min(cost, pathCost);
     }
 
@@ -226,7 +253,7 @@ class AEstrella {
 
     Node start = new Node(startPos);
     start.totalCost = 0.0f;
-    start.estimatedCost = heuristicEstimatedCost(start);
+    start.estimatedCost = heuristicEstimatedCost(start, stateObs);
 
     openList.add(start);
 
@@ -244,7 +271,7 @@ class AEstrella {
 
         if (!openList.contains(neighbour) && !closedList.contains(neighbour)){
           neighbour.totalCost = curDistance + node.totalCost;
-          neighbour.estimatedCost = heuristicEstimatedCost(neighbour);
+          neighbour.estimatedCost = heuristicEstimatedCost(neighbour, stateObs);
           neighbour.parent = node;
 
           openList.add(neighbour);

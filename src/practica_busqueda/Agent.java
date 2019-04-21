@@ -39,7 +39,7 @@ public class Agent extends BaseAgent {
   private Random randomGenerator = new Random();
 
   // FIXME Borrar DEBUGs
-  private final static boolean DEBUG = false;
+  private final static boolean DEBUG = true;
 
 
   public Agent(StateObservation so, ElapsedCpuTimer elapsedTimer) {
@@ -76,11 +76,15 @@ public class Agent extends BaseAgent {
       int newX = x + x_arrNeig[i];
       int newY = y + y_arrNeig[i];
 
-      if (newX >= 0 && newX < stateObs.getObservationGrid().length
-          && newY >= 0 && newY < stateObs.getObservationGrid()[newX].length)
-        for (core.game.Observation obs : newStateObs.getObservationGrid()[newX][newY])
-          if(obs.itype == 10 || obs.itype == 11)
-            return true;
+      if (newX >= 0 && newX < newStateObs.getObservationGrid().length
+          && newY >= 0 && newY < newStateObs.getObservationGrid()[newX].length) {
+        for (core.game.Observation obs : newStateObs.getObservationGrid()[newX][newY]) {
+          if(obs.itype == 10 || obs.itype == 11) {
+            if (x == newX && y == newY) // Monster in our next move
+              return true;
+          }
+        }
+      }
     }
 
     return !newStateObs.isAvatarAlive();
@@ -169,6 +173,38 @@ public class Agent extends BaseAgent {
 
   }
 
+  public Types.ACTIONS randomEscape(StateObservation stateObs){
+    ArrayList<Node> vecinos2 = finder.getNeighbours2(new Node(ultimaPos), stateObs);
+
+    ArrayList<Node> vecinos = new ArrayList<>();
+
+    // self, up, down, left, right
+    int[] x_arrNeig = new int[]{0};
+    int[] y_arrNeig = new int[]{0};
+
+    for(Node vecino : vecinos2){
+      if(!shouldEscape(stateObs, getAction(ultimaPos, vecino.position), x_arrNeig, y_arrNeig)){
+        if(DEBUG) System.out.println("[escape desde " + ultimaPos + "] " + vecino.position);
+        vecinos.add(vecino);
+      }
+    }
+
+    if (vecinos.isEmpty()) {
+      if(DEBUG) System.out.println("No se encontró ninguna ruta de escape desde " + ultimaPos);
+      return Types.ACTIONS.ACTION_NIL;
+    }
+
+    int p = randomGenerator.nextInt(vecinos.size());
+    Node vecinoElegido = vecinos.get(p);
+
+    if(DEBUG) System.out.println("[vecinoElegido] "+ vecinoElegido.position);
+
+    Types.ACTIONS action = getAction(ultimaPos, vecinoElegido.position);
+    if(path != null)
+      path.clear();
+    return action;
+  }
+
   /*
     *********************************************
     Test act methods
@@ -247,6 +283,9 @@ public class Agent extends BaseAgent {
         if(DEBUG) System.out.println("En bucle durante " + isInLoop + " turnos.");
         x_arrNeig = new int[]{0};
         y_arrNeig = new int[]{0};
+
+        if (isInLoop > 10)
+          return randomEscape(stateObs);
       }
     }else {
       isInLoop = 0;
