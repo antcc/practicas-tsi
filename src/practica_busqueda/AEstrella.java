@@ -180,9 +180,9 @@ class AEstrella {
       } else {
         pathCost = path.size();
 
-        // self, up, down, left, right
-        int[] x_arrNeig = new int[]{0, 1, -1, 0, 0};
-        int[] y_arrNeig = new int[]{0, 0, 0, 1, -1};
+        // self, up, down, left, right and diagonals
+        int[] x_arrNeig = new int[]{0, 1, -1, 0, 0, 1, -1,  1, -1};
+        int[] y_arrNeig = new int[]{0, 0, 0, 1, -1, 1, -1, -1,  1};
 
         // Adjust cost taking into account enemies in path
         for (Node tile : path) {
@@ -197,13 +197,13 @@ class AEstrella {
                 && newY >= 0 && newY < stateObs.getObservationGrid()[newX].length)
               for (core.game.Observation obs : stateObs.getObservationGrid()[newX][newY])
                 if(obs.itype == 10 || obs.itype == 11)
-                  pathCost += 10; // FIXME: ajustar valor
+                  pathCost += 10;
           }
 
           // Adjust cost taking into account falling rocks (somewhat)
           for (core.game.Observation obs : stateObs.getObservationGrid()[x][y - 1])
             if(obs.itype == 7)
-              pathCost += 0; // FIXME: ajustar valor
+              pathCost -= 1;
         }
       }
 

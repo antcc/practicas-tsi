@@ -39,7 +39,7 @@ public class Agent extends BaseAgent {
   private Random randomGenerator = new Random();
 
   // FIXME Borrar DEBUGs
-  private final static boolean DEBUG = true;
+  private final static boolean DEBUG = false;
 
 
   public Agent(StateObservation so, ElapsedCpuTimer elapsedTimer) {
