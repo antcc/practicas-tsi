@@ -100,9 +100,9 @@ public class Agent extends BaseAgent {
 
     ArrayList<Node> vecinos = new ArrayList<>();
 
-    // self, up, down, left, right
-    int[] x_arrNeig = new int[]{0, 1, -1, 0, 0};
-    int[] y_arrNeig = new int[]{0, 0, 0, 1, -1};
+    // self, up, down, left, right and diagonals
+    int[] x_arrNeig = new int[]{0, 1, -1, 0, 0, 1, -1,  1, -1};
+    int[] y_arrNeig = new int[]{0, 0, 0, 1, -1, 1, -1, -1, 1};
 
     for (int i = 0; i < 2; i++) {
       for(Node vecino : vecinos2){
