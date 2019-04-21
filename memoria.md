@@ -15,17 +15,19 @@ header-includes:
 
 El objetivo de esta práctica es programar un controlador en el entorno [GVGAI](http://gvgai.net/) que consiga superar varios niveles del juego _Boulder Dash_. Debido a las particularidades de este juego, dicho controlador deberá integrar comportamiento reactivo y deliberativo, pues a pesar de haber elegido un plan de acción pueden presentarse imprevistos durante el camino que haya que solucionar.
 
-La integración del comportamiento deliberativo y reactivo se lleba a cabo en la función `act`, que en cada turno devuelve la siguiente acción que debe realizar el avatar. A grandes rasgos, esta función se comporta del siguiente modo:
+La integración del comportamiento deliberativo y reactivo se lleva a cabo en la función `act`, que en cada turno devuelve la siguiente acción que debe realizar el avatar. A grandes rasgos, esta función se comporta del siguiente modo:
 
 - En primer lugar, comprueba si hay un camino o plan en ejecución. En caso negativo, se encarga de llamar a la función adecuada para crear uno.
-- Una vez que se tiene un plan de acción, se simula la siguiente acción mediante el método `advance` de la clase `StateObservation` que proporciona el entorno. Si en la simulación no encontramos problemas, se procede a devolver la acción y finaliza la función. En otro caso, se pasa el control a una función `escape` para huir del posible peligro.
+- Una vez que se tiene un plan calculado, se simula la siguiente acción. Si en la simulación no encontramos problemas, se procede a devolver la acción y finaliza la función. En otro caso, se pasa el control a una función `escape` para huir del posible peligro.
 - Si en algún momento se detecta que el avatar ha quedado atrapado en un bucle, se ajustan distintos parámetros para intentar que salga de él. El último recurso es realizar una acción aleatoria mediante la función `randomEscape`. La detección de bucles es posible gracias al dato miembro `ultimaPos`, que mantiene siempre la última posición en la que se encontraba el avatar.
 
 A la hora de buscar un plan de acción, siempre se intenta llegar al siguiente _objetivo_, que será una gema o la salida dependiendo de si se ha alcanzado el número de gemas necesario para superar el nivel o no. Hay una excepción a esta regla, y es cuando no se encuentra un camino viable al siguiente objetivo: en este caso, se intenta hacer caer una roca con la esperanza de abrir un nuevo camino.
 
 Eliminando muchos detalles y simplificando la notación, la función principal del controlador quedaría como sigue.
 
-\begin{algorithm}[h]
+\newpage
+
+\begin{algorithm}[ht!]
 \begin{algorithmic}
 
 \Function{act}{StateObservation so}
@@ -43,7 +45,7 @@ Eliminando muchos detalles y simplificando la notación, la función principal d
      \EndIf
      \State siguienteAccion = path.next()
 \\
-     \If {! shouldEscape(siguienteAccion)}
+     \If {nothingToWorryAbout(siguienteAccion)}
             \State \Return siguienteAccion
      \Else
         \State path.clear()
@@ -53,6 +55,10 @@ Eliminando muchos detalles y simplificando la notación, la función principal d
 \EndFunction
 \end{algorithmic}
 \end{algorithm}
+
+Hay que tener en cuenta que el camino a seguir se calcula siempre a partir del estado actual del juego, y no tiene en cuenta posibles modificaciones del mapa por movimientos de enemigos o de rocas. Es por esto que antes de ejecutar la acción propuesta vemos que no haya una roca en nuestro destino con la función `isSafe`, y también comprobamos con la función `shouldEscape` que no haya monstruos en la casilla a la que nos movemos ni en las adyacentes, simulando la acción con el método `advance` de `StateObservation`. Todas estas comprobaciones son las que se encapsulan en el pseudocódigo con `nothingToWorryAbout`.
+
+El hecho de evitar posiciones con posibles monstruos en todas las casillas adyacentes nos puede conducir a una situación de bucle. Si detectamos dicha situación, cambiamos el modo de funcionamiento de la función `shouldEscape`: solo mira si habrá un monstruo en la casilla a la que nos movemos, ignorando los alrededores.
 
 # Comportamiento deliberativo
 
