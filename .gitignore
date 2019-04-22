@@ -7,11 +7,11 @@
 !Makefile
 !memoria.pdf
 
-!src/
-src/*
-!src/practica_busqueda/
-src/practica_busqueda/*
-!src/practica_busqueda/Agent.java
-!src/practica_busqueda/AEstrella.java
-!src/practica_busqueda/Objective.java
+!fuentes/
+fuentes/*
+!fuentes/practica_busqueda/
+fuentes/practica_busqueda/*
+!fuentes/practica_busqueda/Agent.java
+!fuentes/practica_busqueda/AEstrella.java
+!fuentes/practica_busqueda/Objective.java
 !levels/
