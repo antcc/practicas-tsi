@@ -34,9 +34,6 @@ public class Agent extends BaseAgent {
   // RNG
   private Random randomGenerator = new Random();
 
-  // FIXME Borrar DEBUGs
-  private static final boolean DEBUG = false;
-
   public Agent(StateObservation so, ElapsedCpuTimer elapsedTimer) {
     super(so, elapsedTimer);
 
@@ -160,12 +157,9 @@ public class Agent extends BaseAgent {
     int[] y_arrNeig = new int[] {0, 0, 0, 1, -1, 1, -1, -1, 1};
 
     for (int i = 0; i < 3; i++) {
-      for (Node vecino : vecinos2) {
-        if (!shouldEscape(stateObs, getAction(ultimaPos, vecino.position), x_arrNeig, y_arrNeig)) {
-          if (DEBUG) System.out.println("[escape desde " + ultimaPos + "] " + vecino.position);
+      for (Node vecino : vecinos2)
+        if (!shouldEscape(stateObs, getAction(ultimaPos, vecino.position), x_arrNeig, y_arrNeig))
           vecinos.add(vecino);
-        }
-      }
 
       if (vecinos.isEmpty()) { // Eliminar restricciones progresivamente
         if (i == 0) {
@@ -181,10 +175,7 @@ public class Agent extends BaseAgent {
       }
     }
 
-    if (vecinos.isEmpty()) {
-      if (DEBUG) System.out.println("No se encontró ninguna ruta de escape desde " + ultimaPos);
-      return Types.ACTIONS.ACTION_NIL;
-    }
+    if (vecinos.isEmpty()) return Types.ACTIONS.ACTION_NIL;
 
     ArrayList<core.game.Observation>[] npcPositions = stateObs.getNPCPositions();
 
@@ -224,8 +215,6 @@ public class Agent extends BaseAgent {
       vecinoElegido = vecinos.get(p);
     }
 
-    if (DEBUG) System.out.println("[vecinoElegido] " + vecinoElegido.position);
-
     Types.ACTIONS action = getAction(ultimaPos, vecinoElegido.position);
     if (path != null) path.clear();
     return action;
@@ -239,22 +228,14 @@ public class Agent extends BaseAgent {
     int[] x_arrNeig = new int[] {0};
     int[] y_arrNeig = new int[] {0};
 
-    for (Node vecino : vecinos2) {
-      if (!shouldEscape(stateObs, getAction(ultimaPos, vecino.position), x_arrNeig, y_arrNeig)) {
-        if (DEBUG) System.out.println("[escape desde " + ultimaPos + "] " + vecino.position);
+    for (Node vecino : vecinos2)
+      if (!shouldEscape(stateObs, getAction(ultimaPos, vecino.position), x_arrNeig, y_arrNeig))
         vecinos.add(vecino);
-      }
-    }
 
-    if (vecinos.isEmpty()) {
-      if (DEBUG) System.out.println("No se encontró ninguna ruta de escape desde " + ultimaPos);
-      return Types.ACTIONS.ACTION_NIL;
-    }
+    if (vecinos.isEmpty()) return Types.ACTIONS.ACTION_NIL;
 
     int p = randomGenerator.nextInt(vecinos.size());
     Node vecinoElegido = vecinos.get(p);
-
-    if (DEBUG) System.out.println("[vecinoElegido] " + vecinoElegido.position);
 
     Types.ACTIONS action = getAction(ultimaPos, vecinoElegido.position);
     if (path != null) path.clear();
@@ -297,7 +278,6 @@ public class Agent extends BaseAgent {
       // Si no se ha movido incrementamos contador y comprobamos bucle
       isInLoop++;
       if (isInLoop > 5) {
-        if (DEBUG) System.out.println("En bucle durante " + isInLoop + " turnos.");
         x_arrNeig = new int[] {0};
         y_arrNeig = new int[] {0};
 
@@ -339,18 +319,9 @@ public class Agent extends BaseAgent {
       }
 
     } catch (IndexOutOfBoundsException | NullPointerException e) {
-      if (DEBUG) System.out.println("[act] Path vacío: " + e);
       action = escape(stateObs);
     }
 
-    if (DEBUG) {
-      try {
-        Thread.sleep(100);
-      } catch (Exception ignored) {
-      }
-    }
-
-    if (DEBUG) System.out.println("[act] Realizada: " + action);
     return action;
   }
 }
