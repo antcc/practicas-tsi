@@ -21,7 +21,7 @@ La integración del comportamiento deliberativo y reactivo se lleva a cabo en la
 - Una vez que se tiene un plan calculado, se simula la siguiente acción. Si en la simulación no encontramos problemas, se procede a devolver la acción y finaliza la función. En otro caso, se pasa el control a una función `escape` para huir del posible peligro.
 - Si en algún momento se detecta que el avatar ha quedado atrapado en un bucle, se ajustan distintos parámetros para intentar que salga de él. El último recurso es realizar una acción aleatoria mediante la función `randomEscape`. La detección de bucles es posible gracias al dato miembro `ultimaPos`, que mantiene siempre la última posición en la que se encontraba el avatar.
 
-A la hora de buscar un plan de acción, siempre se intenta llegar al siguiente _objetivo_, que será una gema o la salida dependiendo de si se ha alcanzado el número de gemas necesario para superar el nivel o no. Hay una excepción a esta regla, y es cuando no se encuentra un camino viable al siguiente objetivo: en este caso, se intenta hacer caer una roca con la esperanza de abrir un nuevo camino.
+A la hora de buscar un plan de acción, siempre se intenta llegar al siguiente _objetivo_, que será una gema o la salida dependiendo de si se ha alcanzado el número de gemas necesario para superar el nivel o no. Hay una excepción a esta regla, y es cuando no se encuentra un camino viable al siguiente objetivo: en este caso, se intenta hacer caer una roca con la esperanza de abrir un nuevo camino. Esta circunstancia puede detectarse cuando el camino devuelto es `null`.
 
 Eliminando muchos detalles y simplificando la notación, la función principal del controlador quedaría como sigue.
 
@@ -68,7 +68,7 @@ Para trazar un plan empleamos una versión ligeramente modificada del `PathFinde
 
 Sin entrar a describir el archiconocido algoritmo A* que se emplea para la búsqueda de caminos, cabe destacar que mantenemos siempre una lista de objetivos, ordenados en principio por cercanía al avatar, y que se actualizan en cada llamada al algoritmo mediante la función `updateGoals`. También disponemos de una función `isSafe` que nos permite generar los vecinos de una casilla (arriba, abajo, izquierda y derecha) teniendo en cuenta solo las posiciones seguras o transitables. No se contemplan en esta etapa los enemigos como obstáculos, pues puede que se hayan movido en turnos posteriores.
 
-Para utilizar este algoritmo llamamos a la función `getPath` pasándole el estado actual del juego, la posición inicial desde la que trazar el camino y el objetivo que queremos alcanzar (una gema, la salida, o excepcionalmente una casilla justo debajo de una roca). Esta función devuelve una lista de nodos (que se traducen en acciones) que nos llevarán, en principio, al objetivo del tipo deseado con __menor coste heurístico__, que no necesariamente será el más cercano.
+Para utilizar este algoritmo llamamos a la función `getPath` pasándole el estado actual del juego, la posición inicial desde la que trazar el camino y el objetivo que queremos alcanzar (una gema, la salida, o excepcionalmente una casilla justo debajo de una roca). Esta función devuelve una lista de nodos (se traducen en acciones mediante la función `getAction`) que nos llevarán, en principio, al objetivo del tipo deseado con __menor coste heurístico__, que no necesariamente será el más cercano.
 
 ## Heurística empleada
 
