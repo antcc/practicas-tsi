@@ -179,7 +179,7 @@ public class Agent extends BaseAgent {
 
   }
 
-  public Types.ACTIONS randomEscape(StateObservation stateObs){
+  private Types.ACTIONS randomEscape(StateObservation stateObs){
     ArrayList<Node> vecinos2 = finder.getNeighbours2(new Node(ultimaPos), stateObs);
 
     ArrayList<Node> vecinos = new ArrayList<>();
@@ -224,66 +224,29 @@ public class Agent extends BaseAgent {
    * @return the action to get from `from.position` to `to.position`.
    */
   private Types.ACTIONS getAction(Vector2d from, Vector2d to){
-    if(to.x != from.x) {
-      if (to.x > from.x) {
-        return Types.ACTIONS.ACTION_RIGHT;
-      } else {
-        return Types.ACTIONS.ACTION_LEFT;
-      }
-    }
-    else {
-      if(to.y > from.y) {
-        return Types.ACTIONS.ACTION_DOWN;
-      } else {
-        return Types.ACTIONS.ACTION_UP;
-      }
-    }
-  }
-
-  /**
-   * Imprime dónde hay rocas
-   * FIXME Borrar
-   * @param stateObs Current state of the game
-   */
-  private void printRocas(StateObservation stateObs){
-    System.out.print("Rocas según getMovablePositions: [");
-    for(Observation obs : stateObs.getMovablePositions()[0]){
-      Vector2d position =
-        new Vector2d((int) obs.position.x / stateObs.getBlockSize(),(int)obs.position.y / stateObs.getBlockSize());
-      System.out.print(position + ", ");
-    }
-    System.out.println("]");
-
-    System.out.print("Rocas según getObservationGrid: [");
-        for(int x = 0; x < stateObs.getObservationGrid().length; x++){
-          for(int y = 0; y < stateObs.getObservationGrid()[x].length; y++){
-            for(Observation obs : stateObs.getObservationGrid()[x][y]){
-              if(obs.itype == 7){
-                System.out.print(x + ":" + y + ", ");
-              }
-            }
-          }
-        }
-    System.out.println("]");
+    if(to.x != from.x)
+      if (to.x > from.x) return Types.ACTIONS.ACTION_RIGHT;
+      else return Types.ACTIONS.ACTION_LEFT;
+    else
+      if(to.y > from.y) return Types.ACTIONS.ACTION_DOWN;
+      else return Types.ACTIONS.ACTION_UP;
   }
 
   // Basic A* agent act method
   @Override
   public Types.ACTIONS act(StateObservation stateObs, ElapsedCpuTimer elapsedTimer){
-    Types.ACTIONS action;
+    Types.ACTIONS action; // Acción a realizar
 
-    // self, up, down, left, right and diagonals
+    // Casillas a comprobar durante el escape
     int[] x_arrNeig = new int[]{0, 1, -1, 0, 0, 1, -1,  1, -1};
     int[] y_arrNeig = new int[]{0, 0, 0, 1, -1, 1, -1, -1, 1};
 
-    // Get current position and clear path if needed
+    // Obtén la posición actual
     PlayerObservation avatar = getPlayer(stateObs);
-    if (((avatar.getX() != ultimaPos.x) || (avatar.getY() != ultimaPos.y))
-      && path != null && !path.isEmpty()) {
-      path.remove(0);
-    }
+    Vector2d nuevaPos = new Vector2d(avatar.getX(), avatar.getY());
 
-    if (ultimaPos.equals(new Vector2d(avatar.getX(), avatar.getY()))) {
+    if (ultimaPos.equals(nuevaPos)){
+      // Si no se ha movido incrementamos contador y comprobamos bucle
       isInLoop++;
       if(isInLoop > 5){
         if(DEBUG) System.out.println("En bucle durante " + isInLoop + " turnos.");
@@ -294,21 +257,20 @@ public class Agent extends BaseAgent {
           return randomEscape(stateObs);
       }
     }else {
+      // Si se ha movido reiniciamos el contador y quitamos una casilla del path.
       isInLoop = 0;
+      if(path != null && !path.isEmpty()) path.remove(0);
     }
 
+    ultimaPos = nuevaPos;
 
-    ultimaPos = new Vector2d(avatar.getX(), avatar.getY());
-    //System.out.println("[act] Estoy en: " + ultimaPos);
-
-    // Update path
+    // Actualiza path
     if(path == null){ // No hemos encontrado camino; probamos a mover una roca
       path = finder.getPath(stateObs,ultimaPos, Objective.ROCKS);
       waitForPath = 4; // Cuando se vacíe el path, esperamos 4 ticks a que la roca caiga
     }
     else if (path.isEmpty()) { // Hemos terminado de hacer el path actual
-      if(waitForPath-- > 0) // Espera
-        return escape(stateObs);
+      if(waitForPath-- > 0) return escape(stateObs); // En espera
       else { // ve hacia objetivo
         Objective objective
          = getNumGems(stateObs) < NUM_GEMS_FOR_EXIT ? Objective.GEMS : Objective.EXIT;
@@ -316,13 +278,12 @@ public class Agent extends BaseAgent {
       }
     }
 
-    //printRocas(stateObs);
-
-    // Calculate next action
+    // Calcula siguiente acción
     try {
       Vector2d siguientePos = path.get(0).position;
 
-      if(!finder.isSafe(siguientePos, stateObs) || shouldEscape(stateObs, getAction(ultimaPos, siguientePos), x_arrNeig, y_arrNeig)) {
+      if(!finder.isSafe(siguientePos, stateObs)
+        || shouldEscape(stateObs, getAction(ultimaPos, siguientePos), x_arrNeig, y_arrNeig)) {
         action = escape(stateObs);
       } else{
         action = getAction(ultimaPos, siguientePos);
