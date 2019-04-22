@@ -11,6 +11,8 @@ header-includes:
   - \usepackage[noend]{algpseudocode}
 ---
 
+\newpage
+
 # Descripción general de la solución
 
 El objetivo de esta práctica es programar un controlador en el entorno [GVGAI](http://gvgai.net/) que consiga superar varios niveles del juego _Boulder Dash_. Debido a las particularidades de este juego, dicho controlador deberá integrar comportamiento reactivo y deliberativo, pues a pesar de haber elegido un plan de acción pueden presentarse imprevistos durante el camino que haya que solucionar.
@@ -22,10 +24,6 @@ La integración del comportamiento deliberativo y reactivo se lleva a cabo en la
 - Si en algún momento se detecta que el avatar ha quedado atrapado en un bucle, se ajustan distintos parámetros para intentar que salga de él. El último recurso es realizar una acción aleatoria mediante la función `randomEscape`. La detección de bucles es posible gracias al dato miembro `ultimaPos`, que mantiene siempre la última posición en la que se encontraba el avatar.
 
 A la hora de buscar un plan de acción, siempre se intenta llegar al siguiente _objetivo_, que será una gema o la salida dependiendo de si se ha alcanzado el número de gemas necesario para superar el nivel o no. Hay una excepción a esta regla, y es cuando no se encuentra un camino viable al siguiente objetivo: en este caso, se intenta hacer caer una roca con la esperanza de abrir un nuevo camino. Esta circunstancia puede detectarse cuando el camino devuelto es `null`.
-
-Eliminando muchos detalles y simplificando la notación, la función principal del controlador quedaría como sigue.
-
-\newpage
 
 \begin{algorithm}[ht!]
 \begin{algorithmic}

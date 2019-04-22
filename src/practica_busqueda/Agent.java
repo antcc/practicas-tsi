@@ -104,7 +104,7 @@ public class Agent extends BaseAgent {
     int[] x_arrNeig = new int[]{0, 1, -1, 0, 0, 1, -1,  1, -1};
     int[] y_arrNeig = new int[]{0, 0, 0, 1, -1, 1, -1, -1, 1};
 
-    for (int i = 0; i < 2; i++) {
+    for (int i = 0; i < 3; i++) {
       for(Node vecino : vecinos2){
         if(!shouldEscape(stateObs, getAction(ultimaPos, vecino.position), x_arrNeig, y_arrNeig)){
           if(DEBUG) System.out.println("[escape desde " + ultimaPos + "] " + vecino.position);
@@ -112,9 +112,15 @@ public class Agent extends BaseAgent {
         }
       }
 
-      if(vecinos.isEmpty()){ // Intentar una segunda vuelta sin tantas restricciones
-        x_arrNeig = new int[]{0};
-        y_arrNeig = new int[]{0};
+      if(vecinos.isEmpty()){ // Eliminar restricciones progresivamente
+        if (i == 0) {
+          x_arrNeig = new int[]{0, 1, -1, 0, 0};
+          y_arrNeig = new int[]{0, 0, 0, 1, -1};
+        }
+        if (i == 1) {
+          x_arrNeig = new int[]{0};
+          y_arrNeig = new int[]{0};
+        }
       }
       else {
         break;
