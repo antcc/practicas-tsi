@@ -140,16 +140,16 @@ class AEstrella {
           int y = (int) tile.position.y;
 
           for (int i = 0; i < x_arrNeig.length; ++i) {
-            for(int j = 1; j <= 2; j++) {
-              int newX = x + j*x_arrNeig[i];
-              int newY = y + j*y_arrNeig[i];
+            for (int j = 1; j <= 3; j++) {
+              int newX = x + j * x_arrNeig[i];
+              int newY = y + j * y_arrNeig[i];
 
               if (newX >= 0
-                && newX < stateObs.getObservationGrid().length
-                && newY >= 0
-                && newY < stateObs.getObservationGrid()[newX].length)
+                  && newX < stateObs.getObservationGrid().length
+                  && newY >= 0
+                  && newY < stateObs.getObservationGrid()[newX].length)
                 for (Observation obs : stateObs.getObservationGrid()[newX][newY])
-                  if (obs.itype == 10 || obs.itype == 11) pathCost += 11/j;
+                  if (obs.itype == 10 || obs.itype == 11) pathCost += 11.0 / j;
             }
           }
 
