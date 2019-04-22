@@ -23,7 +23,9 @@ La integración del comportamiento deliberativo y reactivo se lleva a cabo en la
 - Una vez que se tiene un plan calculado, se simula la siguiente acción. Si en la simulación no encontramos problemas, se procede a devolver la acción y finaliza la función. En otro caso, se pasa el control a una función `escape` para huir del posible peligro.
 - Si en algún momento se detecta que el avatar ha quedado atrapado en un bucle, se ajustan distintos parámetros para intentar que salga de él. El último recurso es realizar una acción aleatoria mediante la función `randomEscape`. La detección de bucles es posible gracias al dato miembro `ultimaPos`, que mantiene siempre la última posición en la que se encontraba el avatar.
 
-A la hora de buscar un plan de acción, siempre se intenta llegar al siguiente _objetivo_, que será una gema o la salida dependiendo de si se ha alcanzado el número de gemas necesario para superar el nivel o no. Hay una excepción a esta regla, y es cuando no se encuentra un camino viable al siguiente objetivo: en este caso, se intenta hacer caer una roca con la esperanza de abrir un nuevo camino. Esta circunstancia puede detectarse cuando el camino devuelto es `null`.
+A la hora de buscar un plan de acción, siempre se intenta llegar al siguiente _objetivo_, que será una gema o la salida dependiendo de si se ha alcanzado el número de gemas necesario para superar el nivel o no. Hay una excepción a esta regla, y es cuando no se encuentra un camino viable al siguiente objetivo: en este caso, se intenta hacer caer una roca con la esperanza de abrir un nuevo camino. Esta circunstancia puede detectarse cuando el camino devuelto es `null`, y tiene la particularidad de que una vez alcanzado el objetivo debemos esperar 4 ticks a que caiga la roca antes de continuar.
+
+Una versión bastante simplificada de la función principal del controlador sería la siguiente:
 
 \begin{algorithm}[ht!]
 \begin{algorithmic}
@@ -36,13 +38,12 @@ A la hora de buscar un plan de acción, siempre se intenta llegar al siguiente _
      \EndIf
 
      \State ultimaPos = avatar
-\\
+
      \If {path is empty}
      \State objective = computeNextObjective(so)
      \State path = getPath(ultimaPos, objective)
      \EndIf
      \State siguienteAccion = path.next()
-\\
      \If {nothingToWorryAbout(siguienteAccion)}
             \State \Return siguienteAccion
      \Else
