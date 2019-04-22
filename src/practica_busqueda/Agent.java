@@ -50,10 +50,67 @@ public class Agent extends BaseAgent {
     isInLoop = 0;
   }
 
+  /*
+   *********************************************
+   Reactive behavior
+   *********************************************
+  */
+
   /**
-   * Indica si el jugador está en una situación de peligro en el camino actual FIXME: Comprobar
-   * también monstruos cercanos? FIXME: ¿Por qué dice que ha muerto cuando no va en realidad a
-   * morir? FIXME: Si se añade esta condición no consigue escapar. ¿Por qué?
+   * Checks if a position is safe (for escaping)
+   *
+   * @param position The position to check (in world coordinates)
+   * @param stateObs The current state observation
+   * @return Whether `position` is safe
+   */
+  private boolean isSafeforEscape(Vector2d position, StateObservation stateObs) {
+    int x = (int) position.x;
+    int y = (int) position.y;
+
+    // Walls
+    for (Observation obs : stateObs.getImmovablePositions()[0]) {
+      practica_busqueda.Observation newObs =
+          new practica_busqueda.Observation(obs, stateObs.getBlockSize());
+      if (newObs.getX() == x && newObs.getY() == y) return false;
+    }
+
+    // Rocks
+    if (stateObs.getMovablePositions() != null) {
+      for (Observation obs : stateObs.getMovablePositions()[0]) {
+        practica_busqueda.Observation newObs =
+            new practica_busqueda.Observation(obs, stateObs.getBlockSize());
+        if (newObs.getX() == x && newObs.getY() == y) return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * Get neighbors for escaping
+   *
+   * @param node Node to build the neighbor list from
+   * @param stateObs The current state of the game
+   * @return An ArrayList of reachable neighbors
+   */
+  private ArrayList<Node> getNeighboursForEscaping(Node node, StateObservation stateObs) {
+    ArrayList<Node> neighbours = new ArrayList<>();
+    int x = (int) node.position.x;
+    int y = (int) node.position.y;
+
+    // up, down, left, right
+    int[] x_arrNeig = new int[] {0, 0, -1, 1};
+    int[] y_arrNeig = new int[] {-1, 1, 0, 0};
+
+    for (int i = 0; i < x_arrNeig.length; ++i) {
+      Vector2d neighbourPos = new Vector2d(x + x_arrNeig[i], y + y_arrNeig[i]);
+      if (isSafeforEscape(neighbourPos, stateObs)) neighbours.add(new Node(neighbourPos));
+    }
+    return neighbours;
+  }
+
+  /**
+   * Indica si el jugador está en una situación de peligro en el camino actual
    *
    * @param stateObs The current state
    * @return Si está en peligro
@@ -94,7 +151,7 @@ public class Agent extends BaseAgent {
    * @return La acción para evitar el peligro
    */
   public Types.ACTIONS escape(StateObservation stateObs) {
-    ArrayList<Node> vecinos2 = finder.getNeighbours2(new Node(ultimaPos), stateObs);
+    ArrayList<Node> vecinos2 = getNeighboursForEscaping(new Node(ultimaPos), stateObs);
 
     ArrayList<Node> vecinos = new ArrayList<>();
 
@@ -175,11 +232,10 @@ public class Agent extends BaseAgent {
   }
 
   private Types.ACTIONS randomEscape(StateObservation stateObs) {
-    ArrayList<Node> vecinos2 = finder.getNeighbours2(new Node(ultimaPos), stateObs);
+    ArrayList<Node> vecinos2 = getNeighboursForEscaping(new Node(ultimaPos), stateObs);
 
     ArrayList<Node> vecinos = new ArrayList<>();
 
-    // self, up, down, left, right
     int[] x_arrNeig = new int[] {0};
     int[] y_arrNeig = new int[] {0};
 
@@ -207,7 +263,7 @@ public class Agent extends BaseAgent {
 
   /*
    *********************************************
-   Test act methods
+   Main function
    *********************************************
   */
 

@@ -12,7 +12,6 @@ import tools.pathfinder.PathFinder;
 class AEstrella {
   private static PathFinder pf; // Pathfinder para la heurística
   private ArrayList<Vector2d> goals; // Lista de metas actual
-  private static final boolean DEBUG = false; // FIXME Borrar
 
   AEstrella(StateObservation so) {
     ArrayList<Integer> tiposObs = new ArrayList<>();
@@ -30,7 +29,8 @@ class AEstrella {
   /**
    * Updates list of goals
    *
-   * @param stateObs MUST be called at the beginning of getPath.
+   * @param stateObs The current state observation
+   * @note MUST be called at the beginning of getPath.
    */
   private void updateGoals(StateObservation stateObs, Objective objective) {
     goals.clear();
@@ -86,43 +86,13 @@ class AEstrella {
   }
 
   /**
-   * Checks if a position is safe
-   *
-   * @param position The position to check (in world coordinates)
-   * @param stateObs The current state observation
-   * @return Whether `position` is safe
-   */
-  boolean isSafe2(Vector2d position, StateObservation stateObs) {
-    int x = (int) position.x;
-    int y = (int) position.y;
-
-    // Walls
-    for (Observation obs : stateObs.getImmovablePositions()[0]) {
-      practica_busqueda.Observation newObs =
-          new practica_busqueda.Observation(obs, stateObs.getBlockSize());
-      if (newObs.getX() == x && newObs.getY() == y) return false;
-    }
-
-    // Rocks
-    if (stateObs.getMovablePositions() != null) {
-      for (Observation obs : stateObs.getMovablePositions()[0]) {
-        practica_busqueda.Observation newObs =
-            new practica_busqueda.Observation(obs, stateObs.getBlockSize());
-        if (newObs.getX() == x && newObs.getY() == y) return false;
-      }
-    }
-
-    return true;
-  }
-
-  /**
    * Get (reachable) neighbors from a node
    *
    * @param node Node to build the neighbor list from
    * @param stateObs The current state of the game
    * @return An ArrayList of reachable neighbors
    */
-  ArrayList<Node> getNeighbours(Node node, StateObservation stateObs) {
+  private ArrayList<Node> getNeighbours(Node node, StateObservation stateObs) {
     ArrayList<Node> neighbours = new ArrayList<>();
     int x = (int) node.position.x;
     int y = (int) node.position.y;
@@ -134,29 +104,6 @@ class AEstrella {
     for (int i = 0; i < x_arrNeig.length; ++i) {
       Vector2d neighbourPos = new Vector2d(x + x_arrNeig[i], y + y_arrNeig[i]);
       if (isSafe(neighbourPos, stateObs)) neighbours.add(new Node(neighbourPos));
-    }
-    return neighbours;
-  }
-
-  /**
-   * Get (reachable) neighbors from a node
-   *
-   * @param node Node to build the neighbor list from
-   * @param stateObs The current state of the game
-   * @return An ArrayList of reachable neighbors
-   */
-  ArrayList<Node> getNeighbours2(Node node, StateObservation stateObs) {
-    ArrayList<Node> neighbours = new ArrayList<>();
-    int x = (int) node.position.x;
-    int y = (int) node.position.y;
-
-    // up, down, left, right
-    int[] x_arrNeig = new int[] {0, 0, -1, 1};
-    int[] y_arrNeig = new int[] {-1, 1, 0, 0};
-
-    for (int i = 0; i < x_arrNeig.length; ++i) {
-      Vector2d neighbourPos = new Vector2d(x + x_arrNeig[i], y + y_arrNeig[i]);
-      if (isSafe2(neighbourPos, stateObs)) neighbours.add(new Node(neighbourPos));
     }
     return neighbours;
   }
@@ -179,10 +126,7 @@ class AEstrella {
       if (path == null) { // Pathfinder no encuentra camino
         double xDiff = Math.abs(curNode.position.x - goal.x);
         double yDiff = Math.abs(curNode.position.y - goal.y);
-        pathCost =
-            xDiff
-                + yDiff; // FIXME: Sería mejor guiarse sólo por las alcanzables inicialmente si hay
-                         // alguna
+        pathCost = xDiff + yDiff;
       } else {
         pathCost = path.size();
 
@@ -246,14 +190,10 @@ class AEstrella {
    * @return The list of nodes that gets you to the end (or null if there is no path)
    */
   ArrayList<Node> getPath(StateObservation stateObs, Vector2d startPos, Objective objective) {
+    updateGoals(stateObs, objective);
 
-    if (DEBUG) System.out.println("[AEstrella.getPath] Objetivo: " + objective);
-    updateGoals(stateObs, objective); // IMPORTANTE (!)
-
-    if (goals.isEmpty()) {
-      if (DEBUG) System.err.println("No hay metas para " + objective);
-      return null;
-    }
+    // No hay metas
+    if (goals.isEmpty()) return null;
 
     Node node = null;
     PriorityQueue<Node> openList = new PriorityQueue<>();
@@ -269,6 +209,7 @@ class AEstrella {
       node = openList.poll();
       closedList.add(node);
 
+      // Se ha alcanzado alguna meta
       if (goals.contains(node.position)) return calculatePath(node);
 
       ArrayList<Node> neighbours = getNeighbours(node, stateObs);
@@ -295,10 +236,8 @@ class AEstrella {
     }
 
     assert node != null;
-    if (!goals.contains(node.position)) {
-      if (DEBUG) System.err.println("[getPath] No hay camino hacia " + objective);
-      return null;
-    }
+    // No se ha alcanzado ninguna meta
+    if (!goals.contains(node.position)) return null;
 
     return calculatePath(node);
   }
