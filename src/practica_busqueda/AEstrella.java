@@ -11,18 +11,20 @@ import java.util.ArrayList;
 import java.util.PriorityQueue;
 
 class AEstrella {
-  private static PathFinder pf; // A pathfinder (for the heuristic)
-  private ArrayList<Vector2d> goals; // The current list of goals
-  private final static boolean DEBUG = false;
+  private static PathFinder pf; // Pathfinder para la heurística
+  private ArrayList<Vector2d> goals; // Lista de metas actual
+  private final static boolean DEBUG = false; // FIXME Borrar
 
   AEstrella(StateObservation so){
     ArrayList<Integer> tiposObs = new ArrayList<>();
     tiposObs.add(0);  // <- Muros
     tiposObs.add(7);  // <- Piedras
 
-    // Init pathfinder
+    // Inicializa pathfinder
     pf = new PathFinder(tiposObs);
     pf.run(so);
+
+    // Inicializa lista de metas
     goals = new ArrayList<>();
   }
 
@@ -34,7 +36,8 @@ class AEstrella {
    */
   private void updateGoals(StateObservation stateObs, Objective objective){
     goals.clear();
-    if(objective == Objective.ROCKS){
+
+    if(objective == Objective.ROCKS){ // Añade todas las posiciones seguras bajo rocas
       ArrayList<Observation> rockPositions = stateObs.getMovablePositions()[0];
 
       for (Observation rockCore : rockPositions) {
@@ -47,7 +50,7 @@ class AEstrella {
       }
     }
     else{
-      // Get list of goals as core.game.Observations
+      // Lista de metas como observaciones del juego
       ArrayList<Observation> goalsCore;
 
       if(objective == Objective.EXIT){
@@ -57,10 +60,11 @@ class AEstrella {
         goalsCore = stateObs.getResourcesPositions(stateObs.getAvatarPosition())[0];
       }
 
-      // Update them as goals with game coordinates
+      // Añade como metas en coordenadas de juego
       for(Observation goalCore : goalsCore) {
-        practica_busqueda.Observation goal = new practica_busqueda.Observation(goalCore, stateObs.getBlockSize());
-        goals.add(new Vector2d(goal.getX(), goal.getY()));
+        // Crea observaciones de práctica
+        goals.add(new Vector2d(goalCore.position.x/stateObs.getBlockSize(),
+          goalCore.position.y/stateObs.getBlockSize()));
       }
     }
   }
@@ -94,7 +98,7 @@ class AEstrella {
     int y = (int) position.y;
 
     // Walls
-    for (core.game.Observation obs : stateObs.getImmovablePositions()[0]) {
+    for (Observation obs : stateObs.getImmovablePositions()[0]) {
       practica_busqueda.Observation newObs = new practica_busqueda.Observation(obs, stateObs.getBlockSize());
       if (newObs.getX() == x && newObs.getY() == y)
         return false;
@@ -102,7 +106,7 @@ class AEstrella {
 
     // Rocks
     if (stateObs.getMovablePositions() != null) {
-      for (core.game.Observation obs : stateObs.getMovablePositions()[0]) {
+      for (Observation obs : stateObs.getMovablePositions()[0]) {
         practica_busqueda.Observation newObs = new practica_busqueda.Observation(obs, stateObs.getBlockSize());
         if (newObs.getX() == x && newObs.getY() == y)
           return false;
@@ -195,13 +199,13 @@ class AEstrella {
 
             if (newX >= 0 && newX < stateObs.getObservationGrid().length
                 && newY >= 0 && newY < stateObs.getObservationGrid()[newX].length)
-              for (core.game.Observation obs : stateObs.getObservationGrid()[newX][newY])
+              for (Observation obs : stateObs.getObservationGrid()[newX][newY])
                 if(obs.itype == 10 || obs.itype == 11)
                   pathCost += 10;
           }
 
           // Adjust cost taking into account falling rocks (somewhat)
-          for (core.game.Observation obs : stateObs.getObservationGrid()[x][y - 1])
+          for (Observation obs : stateObs.getObservationGrid()[x][y - 1])
             if(obs.itype == 7)
               pathCost -= 1;
         }

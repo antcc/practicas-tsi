@@ -1,17 +1,13 @@
 package practica_busqueda;
 
-// General java imports
+
 import java.util.ArrayList;
 import java.util.Random;
-
-// General game imports
 import core.game.Observation;
 import core.game.StateObservation;
 import ontology.Types;
 import tools.ElapsedCpuTimer;
 import tools.Vector2d;
-
-// Basic A* agent
 import tools.pathfinder.Node;
 
 /**
