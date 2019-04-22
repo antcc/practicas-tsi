@@ -2,13 +2,15 @@
 title: Memoria Práctica 1
 subtitle: Técnicas de los Sistemas Inteligentes
 date: Curso 2018-2019
-geometry: margin=1.2in
 fontsize: 11pt
 author: [Pablo Baeyens Fernández, Antonio Coín Castro]
-
+documentclass: scrartcl
+toc: true
+toc-title: Índice
 header-includes:
   - \usepackage{algorithm}
   - \usepackage[noend]{algpseudocode}
+  - \floatname{algorithm}{Algoritmo}
 ---
 
 \newpage
@@ -23,9 +25,13 @@ La integración del comportamiento deliberativo y reactivo se lleva a cabo en la
 - Una vez que se tiene un plan calculado, se simula la siguiente acción. Si en la simulación no encontramos problemas, se procede a devolver la acción y finaliza la función. En otro caso, se pasa el control a una función `escape` para huir del posible peligro.
 - Si en algún momento se detecta que el avatar ha quedado atrapado en un bucle, se ajustan distintos parámetros para intentar que salga de él. El último recurso es realizar una acción aleatoria mediante la función `randomEscape`. La detección de bucles es posible gracias al dato miembro `ultimaPos`, que mantiene siempre la última posición en la que se encontraba el avatar.
 
-A la hora de buscar un plan de acción, siempre se intenta llegar al siguiente _objetivo_, que será una gema o la salida dependiendo de si se ha alcanzado el número de gemas necesario para superar el nivel o no. Hay una excepción a esta regla, y es cuando no se encuentra un camino viable al siguiente objetivo: en este caso, se intenta hacer caer una roca con la esperanza de abrir un nuevo camino. Esta circunstancia puede detectarse cuando el camino devuelto es `null`, y tiene la particularidad de que una vez alcanzado el objetivo debemos esperar 4 ticks a que caiga la roca antes de continuar.
+A la hora de buscar un plan de acción, siempre se intenta llegar al siguiente _objetivo_, que será 
 
-Una versión bastante simplificada de la función principal del controlador sería la siguiente:
+- una **gema** si no se ha alcanzado el número de gemas necesario para superar el nivel y hay alguna disponible,
+- la **salida** si se ha alcanzado y es alcanzable o 
+- una casilla debajo de una **roca**. Este último objetivo se intenta cuando no se encuentra un camino viable al siguiente objetivo: en este caso, se intenta hacer caer una roca con la esperanza de abrir un nuevo camino. Esta circunstancia puede detectarse cuando el camino devuelto es `null`, y tiene la particularidad de que una vez alcanzado el objetivo debemos esperar 4 ticks a que caiga la roca antes de continuar.
+
+Una versión bastante simplificada de la función principal del controlador puede verse en el **Algoritmo 1**.
 
 \begin{algorithm}[ht!]
 \begin{algorithmic}
@@ -53,21 +59,27 @@ Una versión bastante simplificada de la función principal del controlador ser�
 
 \EndFunction
 \end{algorithmic}
+\caption{Algoritmo principal del agente}
 \end{algorithm}
 
-Hay que tener en cuenta que el camino a seguir se calcula siempre a partir del estado actual del juego, y no tiene en cuenta posibles modificaciones del mapa por movimientos de enemigos o de rocas. Es por esto que antes de ejecutar la acción propuesta vemos que no haya una roca en nuestro destino con la función `isSafe`, y también comprobamos con la función `shouldEscape` que no haya monstruos en la casilla a la que nos movemos ni en las adyacentes, simulando la acción con el método `advance` de `StateObservation`. Todas estas comprobaciones son las que se encapsulan en el pseudocódigo con `nothingToWorryAbout`.
+Hay que tener en cuenta que el camino a seguir se calcula siempre a partir del estado actual del juego, y no tiene en cuenta posibles modificaciones del mapa por movimientos de enemigos o de rocas. Es por esto que antes de ejecutar la acción propuesta comprobamos que no haya una roca en nuestro destino con la función `isSafe`, y también comprobamos con la función `shouldEscape` que no haya monstruos en la casilla a la que nos movemos ni en las adyacentes, simulando la acción con el método `advance` de `StateObservation`. Todas estas comprobaciones son las que se encapsulan en el pseudocódigo con `nothingToWorryAbout`.
 
-El hecho de evitar posiciones con posibles monstruos en todas las casillas adyacentes nos puede conducir a una situación de bucle. Si detectamos dicha situación, cambiamos el modo de funcionamiento de la función `shouldEscape`: solo mira si habrá un monstruo en la casilla a la que nos movemos, ignorando los alrededores.
+El hecho de evitar posiciones con posibles monstruos en todas las casillas adyacentes nos puede conducir a una situación de bucle. Si detectamos dicha situación, cambiamos el modo de funcionamiento de la función `shouldEscape`: solo mira si hay un monstruo en la casilla a la que nos movemos, ignorando los alrededores.
 
 # Comportamiento deliberativo
 
 La parte deliberativa del agente consiste en trazar un plan para llegar al siguiente objetivo, conociendo __únicamente__ el estado actual del juego. Esto quiere decir que un plan que parece seguro en un momento dado puede resultar en la muerte del avatar en turnos posteriores (para evitar esto es necesario programar un comportamiento reactivo).
 
-Para trazar un plan empleamos una versión ligeramente modificada del `PathFinder` que integra el propio entorno GVGAI, encapsulado en la clase `AEstrella`. En esencia, la única modificación relevante es que sustituimos la heurística por una que tenga en cuenta el estado del juego actual, y no únicamente el inicial.
+Para trazar un plan empleamos una versión ligeramente modificada del `PathFinder` que integra el propio entorno GVGAI, encapsulado en la clase `AEstrella`. En esencia, hacemos dos modificaciones relevantes
 
-Sin entrar a describir el archiconocido algoritmo A* que se emplea para la búsqueda de caminos, cabe destacar que mantenemos siempre una lista de objetivos, ordenados en principio por cercanía al avatar, y que se actualizan en cada llamada al algoritmo mediante la función `updateGoals`. También disponemos de una función `isSafe` que nos permite generar los vecinos de una casilla (arriba, abajo, izquierda y derecha) teniendo en cuenta solo las posiciones seguras o transitables. No se contemplan en esta etapa los enemigos como obstáculos, pues puede que se hayan movido en turnos posteriores.
+1. sustituimos la heurística por una que tenga en cuenta el estado del juego actual, y no únicamente el inicial y
+2. adaptamos el algoritmo para que pueda buscar varias metas simultáneamente.
 
-Para utilizar este algoritmo llamamos a la función `getPath` pasándole el estado actual del juego, la posición inicial desde la que trazar el camino y el objetivo que queremos alcanzar (una gema, la salida, o excepcionalmente una casilla justo debajo de una roca). Esta función devuelve una lista de nodos (se traducen en acciones mediante la función `getAction`) que nos llevarán, en principio, al objetivo del tipo deseado con __menor coste heurístico__, que no necesariamente será el más cercano.
+Sin entrar a describir el archiconocido algoritmo A* que se emplea para la búsqueda de caminos, cabe destacar que mantenemos siempre una lista de metas, ordenadas en principio por cercanía al avatar, y que se actualizan en cada llamada al algoritmo mediante la función `updateGoals` (en función del objetivo fijado). 
+
+También disponemos de una función `isSafe` que nos permite generar los vecinos de una casilla (arriba, abajo, izquierda y derecha) teniendo en cuenta solo las posiciones seguras o transitables. No se contemplan en esta etapa los enemigos como obstáculos, pues puede que se hayan movido en turnos posteriores.
+
+Para utilizar este algoritmo llamamos a la función `getPath` pasándole el estado actual del juego, la posición inicial desde la que trazar el camino y el objetivo que queremos alcanzar (una gema, la salida, o excepcionalmente una casilla justo debajo de una roca). Esta función devuelve una lista de nodos (se traducen en acciones mediante la función `getAction`) que nos llevarán, en principio, al objetivo del tipo deseado con __menor coste heurístico__, que no necesariamente será el más cercano (la heurística no es admisible ya que está ajustada para evitar peligros).
 
 ## Heurística empleada
 
@@ -76,6 +88,8 @@ Para calcular el coste heurístico de un nodo aprovechamos el algoritmo de cálc
 La idea es, para cada nodo, considerar como valor heurístico el mínimo de los costes que proporciona el `PathFinder` a todos los posibles objetivos del tipo deseado, partiendo desde dicho nodo. Si en alguno de los casos no hay camino posible, se considera como valor la distancia Manhattan entre las casillas.
 
 Además, en cada uno de los caminos a cada objetivo se ajusta el coste heurístico (antes de calcular el mínimo) por elementos peligrosos y/o deseables. En particular, se incrementa considerablemente el coste por cada monstruo _cercano_ en el camino (en el propio camino o en alguna casilla adyacente a una casilla del camino), y se decrementa ligeramente el coste si conseguimos pasar por debajo de una roca (es decir, hacerla caer).
+
+Una versión en pseudocódigo de la heurística empleada por nuestro agente puede verse en el **Algoritmo 2**.
 
 \begin{algorithm}[h]
 \begin{algorithmic}
@@ -108,6 +122,7 @@ Además, en cada uno de los caminos a cada objetivo se ajusta el coste heurísti
 
 \EndFunction
 \end{algorithmic}
+\caption{Función heurística}
 \end{algorithm}
 
 \newpage

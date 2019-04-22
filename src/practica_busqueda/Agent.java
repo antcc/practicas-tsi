@@ -235,8 +235,6 @@ public class Agent extends BaseAgent {
   // Basic A* agent act method
   @Override
   public Types.ACTIONS act(StateObservation stateObs, ElapsedCpuTimer elapsedTimer){
-    Types.ACTIONS action; // Acción a realizar
-
     // Casillas a comprobar durante el escape
     int[] x_arrNeig = new int[]{0, 1, -1, 0, 0, 1, -1,  1, -1};
     int[] y_arrNeig = new int[]{0, 0, 0, 1, -1, 1, -1, -1, 1};
@@ -279,6 +277,9 @@ public class Agent extends BaseAgent {
     }
 
     // Calcula siguiente acción
+
+    Types.ACTIONS action; // Acción a realizar
+
     try {
       Vector2d siguientePos = path.get(0).position;
 
