@@ -1,8 +1,6 @@
 package practica_busqueda;
 
-/**
- * Enum that indicates what objectives to look for.
- */
+/** Enum that indicates what objectives to look for. */
 public enum Objective {
   GEMS, // Look for any reachable gems
   EXIT, // Look for the level's exit
