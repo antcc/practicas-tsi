@@ -1,0 +1,14 @@
+Dominio:ej1-domain
+Problema:ej1-test2
+numero de zonas:25
+
+H -> z1[algoritmo1-Algoritmo] Z2[] Z3[leonardo1-Leonardo] z4[] z5[oscar1-Oscar]
+H -> z12[] z13[] z14[player1-Player]
+H -> z19[] z20[manzana1-Manzana]
+H -> z21[princesa1-Princesa] z22[] z23[] z24[principe1-Principe]
+V -> z1[] z6[] z11[] z16[bruja1-Bruja]
+V -> z2[] z7[] z12[] z17[] z22[]
+V -> z3[] z8[rosa1-Rosa] z13[] z18[]
+V -> z4[] z9[] z14[] z19[]
+V -> z5[] z10[profesor1-Profesor]
+V -> z20[] z25[oro1-Oro]

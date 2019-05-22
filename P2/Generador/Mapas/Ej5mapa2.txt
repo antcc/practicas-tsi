@@ -1,0 +1,15 @@
+Dominio:ej5-domain
+Problema:ej5-test2
+numero_de_zonas:25
+bolsillo:[bruja1:2 princesa1:1 principe1:1 profesor1:1 leonardo1:1]
+puntos_totales:31
+H -> z1[algoritmo1-Algoritmo bikini1-Bikini][Bosque]=1=Z2[][Piedra]=1=Z3[leonardo1-Leonardo][Piedra]=1=z4[oscar2-Oscar][Piedra]=1=z5[zapatilla1-Zapatilla][Agua]
+H -> z12[][Piedra]=1=z13[player1-Player][Piedra]=1=z14[bikini2-Bikini][Piedra]
+H -> z19[][Piedra]=1=z20[rosa1-Rosa oscar1-Oscar][Piedra]
+H -> z21[princesa1-Princesa][Bosque]=1=z22[][Arena]=1=z23[][Arena]=1=z24[principe1-Principe][Piedra]
+V -> z1[][Bosque]=1=z6[][Piedra]=1=z11[][Agua]=1=z16[manzana1-Manzana][Bosque]
+V -> z2[][Piedra]=1=z7[][Piedra]=1=z12[][Piedra]=1=z17[][Piedra]=1=z22[][Bosque]
+V -> z3[][Arena]=1=z8[oro2-Oro][Piedra]=1=z13[][Piedra]=1=z18[][Piedra]
+V -> z4[][Piedra]=1=z9[oro1-Oro][Piedra]=1=z14[][Piedra]=1=z19[][Piedra]
+V -> z5[][Arena]=1=z10[profesor1-Profesor][Arena]=1=z15[][Agua]
+V -> z20[oro3-Oro][Piedra]=1=z25[bruja1-Bruja][Arena]

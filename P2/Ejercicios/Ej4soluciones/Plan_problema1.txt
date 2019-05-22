@@ -1,0 +1,96 @@
+ff: parsing domain file
+domain 'EJ4-DOMAIN' defined
+ ... done.
+ff: parsing problem file
+problem 'EJ4-TEST' defined
+ ... done.
+
+no optimization required. skipping criterion.
+
+no metric specified. plan length assumed.
+
+task contains conditional effects. turning off state domination.
+
+checking for cyclic := effects --- OK.
+
+ff: search configuration is EHC, if that fails then  best-first on 1*g(s) + 5*h(s) where
+    metric is  plan length
+
+[...........]
+
+Enforced Hill-climbing failed !
+switching to Best-first Search now.
+
+[...........]
+
+ff: found legal plan as follows
+
+step    0: PICK-UP JUGADOR ORO Z1
+        1: PUT-IN-BACKPACK JUGADOR ORO
+        2: TURN-RIGHT N
+        3: MOVE JUGADOR Z1 Z2 E
+        4: PICK-UP JUGADOR MANZANA Z2
+        5: TURN-RIGHT E
+        6: MOVE JUGADOR Z2 Z7 S
+        7: TURN-RIGHT S
+        8: DROP JUGADOR MANZANA Z7
+        9: REMOVE-FROM-BACKPACK JUGADOR ORO
+       10: GIVE JUGADOR PROFESOR Z7 ORO
+       11: PICK-UP JUGADOR BIKINI Z7
+       12: PUT-IN-BACKPACK JUGADOR BIKINI
+       13: PICK-UP JUGADOR MANZANA Z7
+       14: MOVE JUGADOR Z7 Z6 W
+       15: TURN-RIGHT W
+       16: MOVE JUGADOR Z6 Z1 N
+       17: MOVE JUGADOR Z1 Z5 N
+       18: GIVE JUGADOR BRUJA Z5 MANZANA
+       19: MOVE JUGADOR Z5 Z10 N
+       20: PICK-UP JUGADOR OSCAR1 Z10
+       21: TURN-RIGHT N
+       22: TURN-RIGHT E
+       23: MOVE JUGADOR Z10 Z5 S
+       24: TURN-LEFT S
+       25: DROP JUGADOR OSCAR1 Z5
+       26: REMOVE-FROM-BACKPACK JUGADOR BIKINI
+       27: DROP JUGADOR BIKINI Z5
+       28: PICK-UP JUGADOR ZAPATILLAS Z5
+       29: PUT-IN-BACKPACK JUGADOR ZAPATILLAS
+       30: PICK-UP JUGADOR OSCAR1 Z5
+       31: TURN-RIGHT E
+       32: MOVE JUGADOR Z5 Z1 S
+       33: MOVE JUGADOR Z1 Z6 S
+       34: TURN-LEFT S
+       35: GIVE JUGADOR DICAPRIO Z6 OSCAR1
+       36: MOVE JUGADOR Z6 Z7 E
+       37: MOVE JUGADOR Z7 Z8 E
+       38: PICK-UP JUGADOR ROSA Z8
+       39: TURN-LEFT E
+       40: MOVE JUGADOR Z8 Z3 N
+       41: TURN-RIGHT N
+       42: DROP JUGADOR ROSA Z3
+       43: PICK-UP JUGADOR ALGORITMO Z3
+       44: MOVE JUGADOR Z3 Z4 E
+       45: TURN-RIGHT E
+       46: MOVE JUGADOR Z4 Z9 S
+       47: GIVE JUGADOR PRINCIPE Z9 ALGORITMO
+       48: TURN-RIGHT S
+       49: TURN-RIGHT W
+       50: MOVE JUGADOR Z9 Z4 N
+       51: TURN-LEFT N
+       52: MOVE JUGADOR Z4 Z3 W
+       53: PICK-UP JUGADOR ROSA Z3
+       54: TURN-LEFT W
+       55: TURN-LEFT S
+       56: MOVE JUGADOR Z3 Z4 E
+       57: GIVE JUGADOR PRINCESA Z4 ROSA
+     		Coste Total: 0.00
+
+
+time spent:    0.00 seconds instantiating 530 easy, 25 hard action templates
+               0.00 seconds reachability analysis, yielding 121 facts and 211 actions
+               0.00 seconds creating final representation with 115 relevant facts, 2 relevant fluents
+               0.00 seconds computing LNF
+               0.00 seconds building connectivity graph
+              20.71 seconds searching, evaluating 117729 states, to a max depth of 38
+              20.71 seconds total time
+

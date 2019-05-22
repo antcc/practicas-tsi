@@ -1,0 +1,14 @@
+Dominio:ej2-domain
+Problema:ej2-test2
+numero de zonas:25
+
+H -> z1[algoritmo1-Algoritmo]=1=Z2[]=1=Z3[leonardo1-Leonardo]=1=z4[]=1=z5[oscar1-Oscar]
+H -> z12[]=1=z13[]=1=z14[player1-Player]
+H -> z19[]=1=z20[manzana1-Manzana]
+H -> z21[princesa1-Princesa]=1=z22[]=1=z23[]=1=z24[principe1-Principe]
+V -> z1[]=1=z6[]=1=z11[]=1=z16[bruja1-Bruja]
+V -> z2[]=1=z7[]=1=z12[]=1=z17[]=1=z22[]
+V -> z3[]=1=z8[rosa1-Rosa]=1=z13[]=1=z18[]
+V -> z4[]=1=z9[]=1=z14[]=1=z19[]
+V -> z5[]=1=z10[profesor1-Profesor]
+V -> z20[]=1=z25[oro1-Oro]

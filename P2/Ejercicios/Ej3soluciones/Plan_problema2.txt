@@ -1,0 +1,223 @@
+
+ff: parsing domain file
+domain 'EJ3-DOMAIN' defined
+ ... done.
+ff: parsing problem file
+problem 'EJ3-TEST2' defined
+ ... done.
+
+
+
+no optimization required. skipping criterion.
+
+
+no metric specified. plan length assumed.
+
+task contains conditional effects. turning off state domination.
+
+
+
+checking for cyclic := effects --- OK.
+
+ff: search configuration is EHC, if that fails then  best-first on 1*g(s) + 5*h(s) where
+    metric is  plan length
+
+Cueing down from goal distance:   26 into depth [1][2][3][4]
+                                  25            [1][2][3][4][5][6][7]
+                                  24            [1][2][3]
+                                  23            [1][2][3][4][5][6][7][8][9][10]
+                                  22            [1][2][3][4][5][6][7][8]
+                                  21            [1][2][3]
+                                  20            [1][2][3][4][5][6][7]
+                                  19            [1]
+                                  18            [1]
+                                  17            [1][2][3][4][5][6][7][8][9][10][11]
+                                  16            [1][2][3]
+                                  15            [1][2][3]
+                                  14            [1][2][3][4][5][6][7][8]
+                                  13            [1][2][3][4][5][6][7][8][9][10]
+                                  12            [1][2][3][4][5][6][7][8][9][10][11][12][13][14][15]
+                                  11            [1][2][3][4][5][6][7]
+                                  10            [1][2][3][4][5][6][7][8][9][10][11][12][13][14][15][16]
+                                   9            [1][2][3][4][5][6][7][8][9][10][11] --- pruning stopped --- [1][2][3][4][5]
+                                   8            [1][2][3][4][5][6][7][8]
+                                   7            [1][2][3]
+                                   6            [1]
+                                   5            [1][2][3][4][5][6][7][8][9][10][11][12][13][14][15][16][17][18][19][20]
+                                   4            [1]
+                                   3            [1]
+                                   2            [1]
+                                   1            [1]
+                                   0            
+
+ff: found legal plan as follows
+
+step    0: MOVE PLAYER1 Z13 Z8 N
+        1: MOVE PLAYER1 Z8 Z3 N
+        2: TURN-LEFT N
+        3: TURN-LEFT W
+        4: MOVE PLAYER1 Z3 Z8 S
+        5: TURN-RIGHT S
+        6: TURN-RIGHT W
+        7: PICK-UP PLAYER1 ORO2 Z8
+        8: MOVE PLAYER1 Z8 Z3 N
+        9: TURN-LEFT N
+       10: TURN-LEFT W
+       11: GIVE PLAYER1 LEONARDO1 Z3 ORO2
+       12: TURN-LEFT S
+       13: MOVE PLAYER1 Z3 Z4 E
+       14: TURN-RIGHT E
+       15: MOVE PLAYER1 Z4 Z9 S
+       16: MOVE PLAYER1 Z9 Z14 S
+       17: PICK-UP PLAYER1 BIKINI2 Z14
+       18: PUT-IN-BACKPACK PLAYER1 BIKINI2
+       19: TURN-RIGHT S
+       20: TURN-RIGHT W
+       21: MOVE PLAYER1 Z14 Z9 N
+       22: MOVE PLAYER1 Z9 Z4 N
+       23: TURN-RIGHT N
+       24: PICK-UP PLAYER1 OSCAR2 Z4
+       25: MOVE PLAYER1 Z4 Z5 E
+       26: TURN-RIGHT E
+       27: MOVE PLAYER1 Z5 Z10 S
+       28: GIVE PLAYER1 PROFESOR1 Z10 OSCAR2
+       29: TURN-RIGHT S
+       30: TURN-RIGHT W
+       31: MOVE PLAYER1 Z10 Z5 N
+       32: TURN-LEFT N
+       33: MOVE PLAYER1 Z5 Z4 W
+       34: TURN-LEFT W
+       35: TURN-LEFT S
+       36: MOVE PLAYER1 Z4 Z5 E
+       37: TURN-RIGHT E
+       38: PICK-UP PLAYER1 ZAPATILLA1 Z5
+       39: TURN-RIGHT S
+       40: MOVE PLAYER1 Z5 Z4 W
+       41: TURN-LEFT W
+       42: MOVE PLAYER1 Z4 Z9 S
+       43: MOVE PLAYER1 Z9 Z14 S
+       44: MOVE PLAYER1 Z14 Z19 S
+       45: DROP PLAYER1 ZAPATILLA1 Z19
+       46: TURN-LEFT S
+       47: MOVE PLAYER1 Z19 Z20 E
+       48: TURN-RIGHT E
+       49: PICK-UP PLAYER1 ORO3 Z20
+       50: MOVE PLAYER1 Z20 Z25 S
+       51: GIVE PLAYER1 BRUJA1 Z25 ORO3
+       52: TURN-RIGHT S
+       53: TURN-RIGHT W
+       54: MOVE PLAYER1 Z25 Z20 N
+       55: TURN-LEFT N
+       56: PICK-UP PLAYER1 OSCAR1 Z20
+       57: MOVE PLAYER1 Z20 Z19 W
+       58: TURN-RIGHT W
+       59: MOVE PLAYER1 Z19 Z14 N
+       60: TURN-RIGHT N
+       61: DROP PLAYER1 OSCAR1 Z14
+       62: TURN-RIGHT E
+       63: MOVE PLAYER1 Z14 Z19 S
+       64: PICK-UP PLAYER1 ZAPATILLA1 Z19
+       65: TURN-RIGHT S
+       66: TURN-RIGHT W
+       67: MOVE PLAYER1 Z19 Z14 N
+       68: TURN-RIGHT N
+       69: TURN-RIGHT E
+       70: TURN-RIGHT S
+       71: MOVE PLAYER1 Z14 Z13 W
+       72: MOVE PLAYER1 Z13 Z12 W
+       73: TURN-LEFT W
+       74: MOVE PLAYER1 Z12 Z17 S
+       75: MOVE PLAYER1 Z17 Z22 S
+       76: TURN-RIGHT S
+       77: MOVE PLAYER1 Z22 Z21 W
+       78: TURN-RIGHT W
+       79: TURN-RIGHT N
+       80: MOVE PLAYER1 Z21 Z22 E
+       81: TURN-LEFT E
+       82: MOVE PLAYER1 Z22 Z17 N
+       83: MOVE PLAYER1 Z17 Z12 N
+       84: DROP PLAYER1 ZAPATILLA1 Z12
+       85: TURN-RIGHT N
+       86: MOVE PLAYER1 Z12 Z13 E
+       87: MOVE PLAYER1 Z13 Z14 E
+       88: TURN-RIGHT E
+       89: TURN-RIGHT S
+       90: PICK-UP PLAYER1 OSCAR1 Z14
+       91: MOVE PLAYER1 Z14 Z13 W
+       92: MOVE PLAYER1 Z13 Z12 W
+       93: TURN-LEFT W
+       94: DROP PLAYER1 OSCAR1 Z12
+       95: PICK-UP PLAYER1 ZAPATILLA1 Z12
+       96: MOVE PLAYER1 Z12 Z17 S
+       97: MOVE PLAYER1 Z17 Z22 S
+       98: TURN-RIGHT S
+       99: MOVE PLAYER1 Z22 Z21 W
+      100: TURN-RIGHT W
+      101: TURN-RIGHT N
+      102: MOVE PLAYER1 Z21 Z22 E
+      103: TURN-LEFT E
+      104: MOVE PLAYER1 Z22 Z17 N
+      105: DROP PLAYER1 ZAPATILLA1 Z17
+      106: MOVE PLAYER1 Z17 Z12 N
+      107: TURN-LEFT N
+      108: TURN-LEFT W
+      109: PICK-UP PLAYER1 OSCAR1 Z12
+      110: MOVE PLAYER1 Z12 Z17 S
+      111: DROP PLAYER1 OSCAR1 Z17
+      112: PICK-UP PLAYER1 ZAPATILLA1 Z17
+      113: MOVE PLAYER1 Z17 Z22 S
+      114: TURN-RIGHT S
+      115: MOVE PLAYER1 Z22 Z21 W
+      116: TURN-RIGHT W
+      117: DROP PLAYER1 ZAPATILLA1 Z21
+      118: REMOVE-FROM-BACKPACK PLAYER1 BIKINI2
+      119: DROP PLAYER1 BIKINI2 Z21
+      120: PICK-UP PLAYER1 ZAPATILLA1 Z21
+      121: PUT-IN-BACKPACK PLAYER1 ZAPATILLA1
+      122: TURN-RIGHT N
+      123: MOVE PLAYER1 Z21 Z22 E
+      124: TURN-LEFT E
+      125: MOVE PLAYER1 Z22 Z17 N
+      126: TURN-LEFT N
+      127: TURN-LEFT W
+      128: PICK-UP PLAYER1 OSCAR1 Z17
+      129: MOVE PLAYER1 Z17 Z22 S
+      130: TURN-RIGHT S
+      131: MOVE PLAYER1 Z22 Z21 W
+      132: TURN-RIGHT W
+      133: TURN-RIGHT N
+      134: GIVE PLAYER1 PRINCESA1 Z21 OSCAR1
+      135: MOVE PLAYER1 Z21 Z22 E
+      136: TURN-LEFT E
+      137: MOVE PLAYER1 Z22 Z17 N
+      138: MOVE PLAYER1 Z17 Z12 N
+      139: TURN-RIGHT N
+      140: MOVE PLAYER1 Z12 Z13 E
+      141: MOVE PLAYER1 Z13 Z14 E
+      142: TURN-LEFT E
+      143: MOVE PLAYER1 Z14 Z9 N
+      144: TURN-LEFT N
+      145: TURN-LEFT W
+      146: PICK-UP PLAYER1 ORO1 Z9
+      147: MOVE PLAYER1 Z9 Z14 S
+      148: TURN-RIGHT S
+      149: MOVE PLAYER1 Z14 Z13 W
+      150: MOVE PLAYER1 Z13 Z12 W
+      151: TURN-LEFT W
+      152: MOVE PLAYER1 Z12 Z17 S
+      153: MOVE PLAYER1 Z17 Z22 S
+      154: TURN-LEFT S
+      155: MOVE PLAYER1 Z22 Z23 E
+      156: MOVE PLAYER1 Z23 Z24 E
+      157: GIVE PLAYER1 PRINCIPE1 Z24 ORO1
+     		Coste Total: 0.00
+
+
+time spent:    0.00 seconds instantiating 1580 easy, 50 hard action templates
+               0.01 seconds reachability analysis, yielding 334 facts and 646 actions
+               0.00 seconds creating final representation with 329 relevant facts, 1 relevant fluents
+               0.00 seconds computing LNF
+               0.00 seconds building connectivity graph
+               0.09 seconds searching, evaluating 2497 states, to a max depth of 20
+               0.10 seconds total time
+

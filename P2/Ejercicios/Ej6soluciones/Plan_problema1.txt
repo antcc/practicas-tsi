@@ -1,0 +1,180 @@
+
+ff: parsing domain file
+domain 'EJ6-DOMAIN' defined
+ ... done.
+ff: parsing problem file
+problem 'EJ6-TEST' defined
+ ... done.
+
+
+
+no optimization required. skipping criterion.
+
+
+no metric specified. plan length assumed.
+
+task contains conditional effects. turning off state domination.
+
+
+
+checking for cyclic := effects --- OK.
+
+ff: search configuration is EHC, if that fails then  best-first on 1*g(s) + 5*h(s) where
+    metric is  plan length
+
+Cueing down from goal distance:   35 into depth [1][2]
+                                  34            [1][2]
+                                  33            [1][2][3][4]
+                                  31            [1][2]
+                                  30            [1][2][3][4][5]
+                                  29            [1][2]
+                                  28            [1][2]
+                                  27            [1][2]
+                                  26            [1][2][3]
+                                  25            [1][2]
+                                  22            [1]
+                                  21            [1]
+                                  20            [1][2][3][4]
+                                  19            [1][2]
+                                  18            [1][2][3]
+                                  17            [1][2][3][4][5][6][7][8][9]
+                                  15            [1][2]
+                                  14            [1][2][3]
+                                  12            [1][2]
+                                  11            [1]
+                                  10            [1]
+                                   9            [1]
+                                   8            [1]
+                                   6            [1][2][3][4][5][6][7][8][9][10][11][12][13][14][15][16][17][18]
+                                   5            [1]
+                                   4            [1]
+                                   3            [1][2][3][4][5][6][7][8][9][10][11][12][13][14][15][16][17][18][19][20][21][22][23][24][25][26][27][28][29][30][31]
+                                   2            [1]
+                                   1            [1]
+                                   0            
+
+
+ff: found legal plan as follows
+
+step    0: TURN-RIGHT JUGADOR2 N
+        1: TURN-RIGHT JUGADOR1 N
+        2: TURN-RIGHT JUGADOR2 E
+        3: TURN-RIGHT JUGADOR2 S
+        4: MOVE JUGADOR1 Z1 Z2 E
+        5: TURN-RIGHT JUGADOR1 E
+        6: MOVE JUGADOR1 Z2 Z7 S
+        7: TURN-RIGHT JUGADOR1 S
+        8: PICK-UP JUGADOR1 BIKINI Z7
+        9: PUT-IN-BACKPACK JUGADOR1 BIKINI
+       10: TURN-LEFT JUGADOR2 W
+       11: MOVE JUGADOR1 Z7 Z6 W
+       12: TURN-RIGHT JUGADOR1 W
+       13: MOVE JUGADOR1 Z6 Z1 N
+       14: TURN-RIGHT JUGADOR1 N
+       15: PICK-UP JUGADOR2 ALGORITMO Z3
+       16: MOVE JUGADOR2 Z3 Z8 S
+       17: TURN-RIGHT JUGADOR2 S
+       18: MOVE JUGADOR2 Z8 Z7 W
+       19: MOVE JUGADOR1 Z1 Z2 E
+       20: PICK-UP JUGADOR1 MANZANA Z2
+       21: TURN-LEFT JUGADOR1 E
+       22: TURN-LEFT JUGADOR1 N
+       23: MOVE JUGADOR1 Z2 Z1 W
+       24: TURN-RIGHT JUGADOR1 W
+       25: MOVE JUGADOR1 Z1 Z5 N
+       26: TURN-RIGHT JUGADOR1 N
+       27: TURN-RIGHT JUGADOR1 E
+       28: GIVE JUGADOR1 BRUJA Z5 MANZANA
+       29: MOVE JUGADOR1 Z5 Z1 S
+       30: PICK-UP JUGADOR1 ORO Z1
+       31: MOVE JUGADOR1 Z1 Z6 S
+       32: TURN-RIGHT JUGADOR1 S
+       33: TURN-RIGHT JUGADOR1 W
+       34: GIVE JUGADOR1 DICAPRIO Z6 ORO
+       35: TURN-RIGHT JUGADOR1 N
+       36: DROP JUGADOR2 ALGORITMO Z7
+       37: TURN-LEFT JUGADOR1 E
+       38: MOVE JUGADOR1 Z6 Z1 N
+       39: MOVE JUGADOR1 Z1 Z5 N
+       40: PICK-UP JUGADOR1 ZAPATILLAS Z5
+       41: TURN-RIGHT JUGADOR1 N
+       42: TURN-RIGHT JUGADOR1 E
+       43: MOVE JUGADOR1 Z5 Z1 S
+       44: MOVE JUGADOR1 Z1 Z6 S
+       45: TURN-LEFT JUGADOR1 S
+       46: MOVE JUGADOR1 Z6 Z7 E
+       47: TURN-LEFT JUGADOR1 E
+       48: PICK-UP JUGADOR2 ALGORITMO Z7
+       49: TURN-RIGHT JUGADOR1 N
+       50: MOVE JUGADOR1 Z7 Z8 E
+       51: TURN-LEFT JUGADOR1 E
+       52: MOVE JUGADOR1 Z8 Z3 N
+       53: TURN-RIGHT JUGADOR1 N
+       54: MOVE JUGADOR1 Z3 Z4 E
+       55: TURN-RIGHT JUGADOR1 E
+       56: DROP JUGADOR1 ZAPATILLAS Z4
+       57: PICK-UP JUGADOR1 ROSA2 Z4
+       58: GIVE JUGADOR1 PRINCESA Z4 ROSA2
+       59: TURN-RIGHT JUGADOR1 S
+       60: GIVE JUGADOR2 PROFESOR Z7 ALGORITMO
+       61: PICK-UP JUGADOR1 ZAPATILLAS Z4
+       62: MOVE JUGADOR1 Z4 Z3 W
+       63: DROP JUGADOR1 ZAPATILLAS Z3
+       64: TURN-RIGHT JUGADOR2 W
+       65: TURN-RIGHT JUGADOR2 N
+       66: MOVE JUGADOR2 Z7 Z8 E
+       67: TURN-LEFT JUGADOR2 E
+       68: PICK-UP JUGADOR2 ROSA1 Z8
+       69: PUT-IN-BACKPACK JUGADOR2 ROSA1
+       70: MOVE JUGADOR2 Z8 Z3 N
+       71: TURN-RIGHT JUGADOR2 N
+       72: PICK-UP JUGADOR2 ZAPATILLAS Z3
+       73: MOVE JUGADOR2 Z3 Z4 E
+       74: TURN-RIGHT JUGADOR2 E
+       75: DROP JUGADOR2 ZAPATILLAS Z4
+       76: REMOVE-FROM-BACKPACK JUGADOR2 ROSA1
+       77: GIVE JUGADOR2 PRINCESA Z4 ROSA1
+       78: PICK-UP JUGADOR2 ZAPATILLAS Z4
+       79: TURN-RIGHT JUGADOR2 S
+       80: MOVE JUGADOR2 Z4 Z3 W
+       81: TURN-RIGHT JUGADOR2 W
+       82: TURN-LEFT JUGADOR1 W
+       83: MOVE JUGADOR1 Z3 Z8 S
+       84: TURN-RIGHT JUGADOR1 S
+       85: MOVE JUGADOR1 Z8 Z7 W
+       86: MOVE JUGADOR1 Z7 Z6 W
+       87: TURN-RIGHT JUGADOR1 W
+       88: MOVE JUGADOR1 Z6 Z1 N
+       89: MOVE JUGADOR1 Z1 Z5 N
+       90: MOVE JUGADOR1 Z5 Z10 N
+       91: TURN-RIGHT JUGADOR1 N
+       92: TURN-RIGHT JUGADOR1 E
+       93: PICK-UP JUGADOR1 OSCAR1 Z10
+       94: MOVE JUGADOR1 Z10 Z5 S
+       95: MOVE JUGADOR1 Z5 Z1 S
+       96: MOVE JUGADOR1 Z1 Z6 S
+       97: TURN-LEFT JUGADOR1 S
+       98: MOVE JUGADOR1 Z6 Z7 E
+       99: MOVE JUGADOR1 Z7 Z8 E
+      100: TURN-LEFT JUGADOR1 E
+      101: MOVE JUGADOR1 Z8 Z3 N
+      102: TURN-RIGHT JUGADOR2 N
+      103: DROP JUGADOR1 OSCAR1 Z3
+      104: PUT-IN-BACKPACK JUGADOR2 ZAPATILLAS
+      105: PICK-UP JUGADOR2 OSCAR1 Z3
+      106: MOVE JUGADOR2 Z3 Z4 E
+      107: TURN-RIGHT JUGADOR2 E
+      108: MOVE JUGADOR2 Z4 Z9 S
+      109: GIVE JUGADOR2 PRINCIPE Z9 OSCAR1
+     		Coste Total: 0.00
+
+
+time spent:    0.00 seconds instantiating 1218 easy, 50 hard action templates
+               0.00 seconds reachability analysis, yielding 170 facts and 476 actions
+               0.00 seconds creating final representation with 164 relevant facts, 14 relevant fluents
+               0.00 seconds computing LNF
+               0.01 seconds building connectivity graph
+               4.04 seconds searching, evaluating 136886 states, to a max depth of 31
+               4.05 seconds total time
+
+

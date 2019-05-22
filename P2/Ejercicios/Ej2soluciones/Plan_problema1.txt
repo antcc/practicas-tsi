@@ -1,0 +1,92 @@
+ff: parsing domain file
+domain 'EJ2-DOMAIN' defined
+ ... done.
+ff: parsing problem file
+problem 'EJ2-TEST' defined
+ ... done.
+
+metric established (normalized to minimize): ((1.00*[RF0](TOTAL-COST)) - () + 0.00)
+
+task contains conditional effects. turning off state domination.
+
+checking for cyclic := effects --- OK.
+
+ff: search configuration is  best-first on 1*g(s) + 1*h(s) where
+    metric is ((1.00*[RF0](TOTAL-COST)) - () + 0.00)
+pasos al goal:   16    #acciones:    0   coste actual:    0.00    coste estimado:   11.00    tiempo:    0.00
+                 15    #acciones:    3   coste actual:    0.00    coste estimado:    8.00    tiempo:    0.00
+                 14    #acciones:    8   coste actual:    2.00    coste estimado:   10.00    tiempo:    0.00
+                 16    #acciones:    2   coste actual:    1.00    coste estimado:   11.00    tiempo:    0.00
+
+[...............................]
+
+ff: found legal plan as follows
+
+step    0: PICK-UP JUGADOR ORO Z1
+        1: MOVE JUGADOR Z1 Z5 N
+        2: DROP JUGADOR ORO Z5
+        3: MOVE JUGADOR Z5 Z10 N
+        4: PICK-UP JUGADOR OSCAR1 Z10
+        5: TURN-RIGHT N
+        6: TURN-RIGHT E
+        7: MOVE JUGADOR Z10 Z5 S
+        8: TURN-LEFT S
+        9: TURN-LEFT E
+       10: GIVE JUGADOR BRUJA OSCAR1 Z5
+       11: PICK-UP JUGADOR ORO Z5
+       12: TURN-RIGHT N
+       13: TURN-RIGHT E
+       14: MOVE JUGADOR Z5 Z1 S
+       15: MOVE JUGADOR Z1 Z6 S
+       16: GIVE JUGADOR DICAPRIO ORO Z6
+       17: TURN-LEFT S
+       18: MOVE JUGADOR Z6 Z7 E
+       19: MOVE JUGADOR Z7 Z8 E
+       20: MOVE JUGADOR Z8 Z11 E
+       21: PICK-UP JUGADOR OSCAR2 Z11
+       22: TURN-LEFT E
+       23: TURN-LEFT N
+       24: MOVE JUGADOR Z11 Z8 W
+       25: DROP JUGADOR OSCAR2 Z8
+       26: PICK-UP JUGADOR ROSA Z8
+       27: MOVE JUGADOR Z8 Z7 W
+       28: DROP JUGADOR ROSA Z7
+       29: TURN-LEFT W
+       30: TURN-LEFT S
+       31: PICK-UP JUGADOR ROSA Z7
+       32: GIVE JUGADOR PROFESOR ROSA Z7
+       33: MOVE JUGADOR Z7 Z8 E
+       34: PICK-UP JUGADOR OSCAR2 Z8
+       35: TURN-LEFT E
+       36: MOVE JUGADOR Z8 Z3 N
+       37: DROP JUGADOR OSCAR2 Z3
+       38: PICK-UP JUGADOR ALGORITMO Z3
+       39: TURN-RIGHT N
+       40: MOVE JUGADOR Z3 Z4 E
+       41: DROP JUGADOR ALGORITMO Z4
+       42: TURN-LEFT E
+       43: TURN-LEFT N
+       44: PICK-UP JUGADOR ALGORITMO Z4
+       45: GIVE JUGADOR PRINCESA ALGORITMO Z4
+       46: MOVE JUGADOR Z4 Z3 W
+       47: PICK-UP JUGADOR OSCAR2 Z3
+       48: TURN-LEFT W
+       49: TURN-LEFT S
+       50: MOVE JUGADOR Z3 Z4 E
+       51: TURN-RIGHT E
+       52: MOVE JUGADOR Z4 Z9 S
+       53: DROP JUGADOR OSCAR2 Z9
+       54: TURN-LEFT S
+       55: TURN-LEFT E
+       56: PICK-UP JUGADOR OSCAR2 Z9
+       57: GIVE JUGADOR PRINCIPE OSCAR2 Z9
+     		Coste Total: 17.00
+
+
+time spent:    0.00 seconds instantiating 492 easy, 0 hard action templates
+               0.00 seconds reachability analysis, yielding 104 facts and 192 actions
+               0.00 seconds creating final representation with 99 relevant facts, 1 relevant fluents
+               0.00 seconds computing LNF
+               0.00 seconds building connectivity graph
+              35.12 seconds searching, evaluating 101456 states, to a max depth of 0
+              35.12 seconds total time
