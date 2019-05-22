@@ -1,8 +1,6 @@
 # ignore everything but src/practica_busqueda/Agent.java and a few files
 /*
 !.gitignore
-!README.md
-!LICENSE
 !memoria.md
 !Makefile
 !memoria.pdf
