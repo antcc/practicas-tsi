@@ -15,10 +15,10 @@
 :action (debark p3 a1 c5) start: 12/07/2007 10:00:00 end: 12/07/2007 11:00:00
 
 Number of actions: 15 (15)
-Expansions: 11
-Generated nodes: 26
+Expansions: 9
+Generated nodes: 24
 Inferences: 0
 Time in seconds: 0
-Real Time: 0.0085625
-Used Time: 1.3411e-09
-System Time: -3.57628e-09
+Real Time: 0.0009375
+Used Time: -2.98023e-10
+System Time: 1.78814e-09
