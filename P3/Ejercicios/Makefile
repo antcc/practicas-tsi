@@ -4,7 +4,7 @@ GENERABLES:=$(wildcard E*/problema*.pddl)
 PROBLEMAS:=$(patsubst %.pddl, %.out.txt, $(GENERABLES))
 
 # Ejecutable de HTNP
-HTNP:=./htnp/htnp.exe
+HTNP:=../htnp/htnp.exe
 
 all: $(PROBLEMAS)
 
