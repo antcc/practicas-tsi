@@ -100,6 +100,12 @@
           (fly ?a ?c1 ?c2)
          )
    )
+   (:method no-fuel
+     :precondition (not (hay-fuel ?a ?c1 ?c2))
+     :tasks ((refuel ?a ?c1)
+              (fly ?a ?c1 ?c2))
+
+   )
   )
 
 (:import "../Primitivas-Zenotravel.pddl")
