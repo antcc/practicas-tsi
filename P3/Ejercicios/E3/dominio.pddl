@@ -121,7 +121,7 @@
     )
 
 
-(:import "../Primitivas-Zenotravel.pddl")
+(:import "Primitivas-Zenotravel.pddl")
 
 
 )
