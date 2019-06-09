@@ -1,28 +1,27 @@
-(define (problem zeno-0) (:domain zeno-travel)
+(define (problem zeno-1) (:domain zeno-travel)
 (:customization
 (= :time-format "%d/%m/%Y %H:%M:%S")
 (= :time-horizon-relative 2500)
 (= :time-start "05/06/2007 08:00:00")
 (= :time-unit :hours))
 
-(:objects 
+(:objects
     p1 p2 p3 - person
     c1 c2 c3 c4 c5 - city
     a1 - aircraft
 )
 (:init
-    (at p1 c1) 
+    (at p1 c1)
     (at p2 c2)
     (at p3 c3)
     (at a1 c4)
-    (= (fuel-limit) 1500)
+    (= (fuel-limit a1) 1500)
     (= (distance c1 c2) 100)
     (= (distance c2 c3) 100)
     (= (distance c3 c4) 100)
     (= (distance c4 c5) 100)
     (= (distance c5 c1) 100)
     (= (distance c1 c5) 100)
-
     (= (distance c1 c3) 150)
     (= (distance c1 c4) 150)
     (= (distance c2 c5) 150)
@@ -33,6 +32,16 @@
     (= (distance c4 c1) 150)
     (= (distance c5 c2) 150)
     (= (distance c5 c3) 150)
+
+    (destino p1 c5)
+    (destino p2 c5)
+    (destino p3 c5)
+
+    (= (time-consumed a1) 0)
+    (= (time-limit a1) 10000)
+    (= (max-people a1) 2)
+    (= (people a1) 0)
+
     (= (fuel a1) 200)
     (= (slow-speed a1) 10)
     (= (fast-speed a1) 20)
@@ -40,7 +49,7 @@
     (= (fast-burn a1) 2)
     (= (capacity a1) 300)
     (= (refuel-rate a1) 1)
-    (= (total-fuel-used) 0)
+    (= (total-fuel-used a1) 0)
     (= (boarding-time) 1)
     (= (debarking-time) 1)
  )
@@ -48,16 +57,7 @@
 
 (:tasks-goal
    :tasks(
-   (transport-person p1 c5)
-   (transport-person p2 c5)
-   (transport-person p3 c5)
-   
+   (transport-person)
    )
   )
 )
-   
-    
-    
-    
-
-    

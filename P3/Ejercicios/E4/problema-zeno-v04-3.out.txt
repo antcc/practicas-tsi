@@ -1,0 +1,86 @@
+0009:fixme:ntdll:NtSetInformationToken unimplemented class 4
+0009:fixme:advapi:ImpersonateLoggedOnUser ((nil))
+
+E4/dominio2.pddl:50: warning: Duplicated variable ¿? `?x'.
+################################################################################
+0 errors 1 warnings parsing domain file: E4/dominio2.pddl
+--------------------------------------------------------------------------------
+0009:err:module:load_builtin_dll failed to load .so lib for builtin L"l3codeca.acm": libmpg123.so.0: no se puede abrir el fichero del objeto compartido: No existe el fichero o el directorio
+:action (board p5 a1 granada) start: 05/06/2007 08:00:00 end: 05/06/2007 09:00:00
+:action (board p6 a1 granada) start: 05/06/2007 09:00:00 end: 05/06/2007 10:00:00
+:action (board p10 a2 malaga) start: 05/06/2007 10:00:00 end: 05/06/2007 11:00:00
+:action (board p17 a1 granada) start: 05/06/2007 11:00:00 end: 05/06/2007 12:00:00
+:action (zoom a1 granada gibraltar) start: 05/06/2007 12:00:00 end: 06/06/2007 01:00:00
+:action (debark p5 a1 gibraltar) start: 06/06/2007 01:00:00 end: 06/06/2007 02:00:00
+:action (debark p17 a1 gibraltar) start: 06/06/2007 02:00:00 end: 06/06/2007 03:00:00
+:action (board p16 a1 gibraltar) start: 06/06/2007 03:00:00 end: 06/06/2007 04:00:00
+:action (refuel a1 gibraltar) start: 06/06/2007 04:00:00 end: 27/06/2007 10:00:00
+:action (fly a1 gibraltar bilbao) start: 27/06/2007 10:00:00 end: 02/07/2007 01:00:00
+:action (debark p16 a1 bilbao) start: 02/07/2007 01:00:00 end: 02/07/2007 02:00:00
+:action (board p3 a1 bilbao) start: 02/07/2007 02:00:00 end: 02/07/2007 03:00:00
+:action (board p14 a1 bilbao) start: 02/07/2007 03:00:00 end: 02/07/2007 04:00:00
+:action (board p15 a1 bilbao) start: 02/07/2007 04:00:00 end: 02/07/2007 05:00:00
+:action (refuel a1 bilbao) start: 02/07/2007 05:00:00 end: 17/08/2007 11:00:00
+:action (fly a1 bilbao granada) start: 17/08/2007 11:00:00 end: 20/08/2007 22:00:00
+:action (debark p15 a1 granada) start: 20/08/2007 22:00:00 end: 20/08/2007 23:00:00
+:action (debark p3 a1 granada) start: 20/08/2007 23:00:00 end: 21/08/2007 00:00:00
+:action (refuel a1 granada) start: 21/08/2007 00:00:00 end: 24/09/2007 13:00:00
+:action (zoom a1 granada madrid) start: 24/09/2007 13:00:00 end: 25/09/2007 10:00:00
+:action (debark p14 a1 madrid) start: 25/09/2007 10:00:00 end: 25/09/2007 11:00:00
+:action (board p9 a1 madrid) start: 25/09/2007 11:00:00 end: 25/09/2007 12:00:00
+:action (board p20 a1 madrid) start: 25/09/2007 12:00:00 end: 25/09/2007 13:00:00
+:action (board p21 a1 madrid) start: 25/09/2007 13:00:00 end: 25/09/2007 14:00:00
+:action (refuel a1 madrid) start: 25/09/2007 14:00:00 end: 30/10/2007 15:00:00
+:action (fly a1 madrid barcelona) start: 30/10/2007 15:00:00 end: 02/11/2007 05:00:00
+:action (debark p21 a1 barcelona) start: 02/11/2007 05:00:00 end: 02/11/2007 06:00:00
+:action (debark p20 a1 barcelona) start: 02/11/2007 06:00:00 end: 02/11/2007 07:00:00
+:action (board p13 a1 barcelona) start: 02/11/2007 07:00:00 end: 02/11/2007 08:00:00
+:action (board p2 a1 barcelona) start: 02/11/2007 08:00:00 end: 02/11/2007 09:00:00
+:action (refuel a1 barcelona) start: 02/11/2007 09:00:00 end: 28/11/2007 06:00:00
+:action (fly a1 barcelona jaen) start: 28/11/2007 06:00:00 end: 01/12/2007 14:00:00
+:action (debark p2 a1 jaen) start: 01/12/2007 14:00:00 end: 01/12/2007 15:00:00
+:action (debark p13 a1 jaen) start: 01/12/2007 15:00:00 end: 01/12/2007 16:00:00
+:action (board p8 a1 jaen) start: 01/12/2007 16:00:00 end: 01/12/2007 17:00:00
+:action (board p19 a1 jaen) start: 01/12/2007 17:00:00 end: 01/12/2007 18:00:00
+:action (refuel a1 jaen) start: 01/12/2007 18:00:00 end: 04/01/2008 06:00:00
+:action (zoom a1 jaen almeria) start: 04/01/2008 06:00:00 end: 04/01/2008 17:00:00
+:action (debark p19 a1 almeria) start: 04/01/2008 17:00:00 end: 04/01/2008 18:00:00
+:action (debark p9 a1 almeria) start: 04/01/2008 18:00:00 end: 04/01/2008 19:00:00
+:action (board p12 a1 almeria) start: 04/01/2008 19:00:00 end: 04/01/2008 20:00:00
+:action (board p1 a1 almeria) start: 04/01/2008 20:00:00 end: 04/01/2008 21:00:00
+:action (refuel a1 almeria) start: 04/01/2008 21:00:00 end: 23/01/2008 05:00:00
+:action (zoom a1 almeria madrid) start: 23/01/2008 05:00:00 end: 24/01/2008 08:00:00
+:action (debark p1 a1 madrid) start: 24/01/2008 08:00:00 end: 24/01/2008 09:00:00
+:action (refuel a1 madrid) start: 24/01/2008 09:00:00 end: 09/03/2008 23:00:00
+:action (zoom a1 madrid malaga) start: 09/03/2008 23:00:00 end: 11/03/2008 02:00:00
+:action (debark p12 a1 malaga) start: 11/03/2008 02:00:00 end: 11/03/2008 03:00:00
+:action (refuel a1 malaga) start: 11/03/2008 03:00:00 end: 24/04/2008 12:00:00
+:action (fly a1 malaga bilbao) start: 24/04/2008 12:00:00 end: 28/04/2008 10:00:00
+:action (debark p8 a1 bilbao) start: 28/04/2008 10:00:00 end: 28/04/2008 11:00:00
+:action (zoom a2 malaga sevilla) start: 28/04/2008 11:00:00 end: 28/04/2008 21:00:00
+:action (debark p10 a2 sevilla) start: 28/04/2008 21:00:00 end: 28/04/2008 22:00:00
+:action (board p11 a2 sevilla) start: 28/04/2008 22:00:00 end: 28/04/2008 23:00:00
+:action (zoom a2 sevilla huelva) start: 28/04/2008 23:00:00 end: 29/04/2008 04:00:00
+:action (debark p11 a2 huelva) start: 29/04/2008 04:00:00 end: 29/04/2008 05:00:00
+:action (board p7 a2 huelva) start: 29/04/2008 05:00:00 end: 29/04/2008 06:00:00
+:action (board p18 a2 huelva) start: 29/04/2008 06:00:00 end: 29/04/2008 07:00:00
+:action (zoom a2 huelva cordoba) start: 29/04/2008 07:00:00 end: 29/04/2008 19:00:00
+:action (debark p18 a2 cordoba) start: 29/04/2008 19:00:00 end: 29/04/2008 20:00:00
+:action (board p4 a2 cordoba) start: 29/04/2008 20:00:00 end: 29/04/2008 21:00:00
+:action (refuel a2 cordoba) start: 29/04/2008 21:00:00 end: 14/06/2008 07:00:00
+:action (zoom a2 cordoba huelva) start: 14/06/2008 07:00:00 end: 14/06/2008 19:00:00
+:action (debark p4 a2 huelva) start: 14/06/2008 19:00:00 end: 14/06/2008 20:00:00
+:action (refuel a2 huelva) start: 14/06/2008 20:00:00 end: 04/07/2008 22:00:00
+:action (fly a2 huelva barcelona) start: 04/07/2008 22:00:00 end: 09/07/2008 16:00:00
+:action (debark p7 a2 barcelona) start: 09/07/2008 16:00:00 end: 09/07/2008 17:00:00
+:action (refuel a1 bilbao) start: 09/07/2008 17:00:00 end: 17/08/2008 20:00:00
+:action (fly a1 bilbao cordoba) start: 17/08/2008 20:00:00 end: 21/08/2008 04:00:00
+:action (debark p6 a1 cordoba) start: 21/08/2008 04:00:00 end: 21/08/2008 05:00:00
+Number of actions: 70 (71)
+Expansions: 82
+Generated nodes: 160
+Inferences: 0
+Time in seconds: 0.2
+Real Time: 0.196
+Used Time: 0.2
+System Time: 5.96046e-10

@@ -1,0 +1,46 @@
+0009:fixme:ntdll:NtSetInformationToken unimplemented class 4
+0009:fixme:advapi:ImpersonateLoggedOnUser ((nil))
+
+E4/dominio2.pddl:50: warning: Duplicated variable ¿? `?x'.
+################################################################################
+0 errors 1 warnings parsing domain file: E4/dominio2.pddl
+--------------------------------------------------------------------------------
+0009:err:module:load_builtin_dll failed to load .so lib for builtin L"l3codeca.acm": libmpg123.so.0: no se puede abrir el fichero del objeto compartido: No existe el fichero o el directorio
+:action (zoom a1 sevilla cordoba) start: 05/06/2007 08:00:00 end: 05/06/2007 15:00:00
+:action (board p1 a1 cordoba) start: 05/06/2007 15:00:00 end: 05/06/2007 16:00:00
+:action (board p4 a1 cordoba) start: 05/06/2007 16:00:00 end: 05/06/2007 17:00:00
+:action (refuel a1 cordoba) start: 05/06/2007 17:00:00 end: 14/07/2007 07:00:00
+:action (zoom a1 cordoba gibraltar) start: 14/07/2007 07:00:00 end: 14/07/2007 22:00:00
+:action (debark p1 a1 gibraltar) start: 14/07/2007 22:00:00 end: 14/07/2007 23:00:00
+:action (zoom a1 gibraltar sevilla) start: 14/07/2007 23:00:00 end: 15/07/2007 09:00:00
+:action (debark p4 a1 sevilla) start: 15/07/2007 09:00:00 end: 15/07/2007 10:00:00
+:action (refuel a1 sevilla) start: 15/07/2007 10:00:00 end: 25/08/2007 16:00:00
+:action (zoom a1 sevilla jaen) start: 25/08/2007 16:00:00 end: 26/08/2007 04:00:00
+:action (board p2 a1 jaen) start: 26/08/2007 04:00:00 end: 26/08/2007 05:00:00
+:action (zoom a1 jaen cordoba) start: 26/08/2007 05:00:00 end: 26/08/2007 10:00:00
+:action (debark p2 a1 cordoba) start: 26/08/2007 10:00:00 end: 26/08/2007 11:00:00
+:action (zoom a1 cordoba granada) start: 26/08/2007 11:00:00 end: 26/08/2007 19:00:00
+:action (board p3 a1 granada) start: 26/08/2007 19:00:00 end: 26/08/2007 20:00:00
+:action (refuel a1 granada) start: 26/08/2007 20:00:00 end: 08/10/2007 16:00:00
+:action (zoom a1 granada madrid) start: 08/10/2007 16:00:00 end: 09/10/2007 13:00:00
+:action (debark p3 a1 madrid) start: 09/10/2007 13:00:00 end: 09/10/2007 14:00:00
+:action (refuel a1 madrid) start: 09/10/2007 14:00:00 end: 13/11/2007 15:00:00
+:action (zoom a1 madrid almeria) start: 13/11/2007 15:00:00 end: 14/11/2007 18:00:00
+:action (board p5 a1 almeria) start: 14/11/2007 18:00:00 end: 14/11/2007 19:00:00
+:action (refuel a1 almeria) start: 14/11/2007 19:00:00 end: 30/12/2007 09:00:00
+:action (zoom a1 almeria cadiz) start: 30/12/2007 09:00:00 end: 31/12/2007 08:00:00
+:action (debark p5 a1 cadiz) start: 31/12/2007 08:00:00 end: 31/12/2007 09:00:00
+:action (refuel a2 madrid) start: 31/12/2007 09:00:00 end: 27/01/2008 01:00:00
+:action (zoom a2 madrid bilbao) start: 27/01/2008 01:00:00 end: 27/01/2008 21:00:00
+:action (board p6 a2 bilbao) start: 27/01/2008 21:00:00 end: 27/01/2008 22:00:00
+:action (refuel a2 bilbao) start: 27/01/2008 22:00:00 end: 29/02/2008 20:00:00
+:action (zoom a2 bilbao madrid) start: 29/02/2008 20:00:00 end: 01/03/2008 16:00:00
+:action (debark p6 a2 madrid) start: 01/03/2008 16:00:00 end: 01/03/2008 17:00:00
+Number of actions: 30 (31)
+Expansions: 31
+Generated nodes: 62
+Inferences: 0
+Time in seconds: 0.02
+Real Time: 0.0215
+Used Time: 0.02
+System Time: 1.78814e-09

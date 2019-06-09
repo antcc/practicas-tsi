@@ -2,9 +2,11 @@
  :parameters (?p - person ?a - aircraft ?c - city)
  :duration (= ?duration (boarding-time))
  :condition (and  (at ?p ?c)
-                  (at ?a ?c))
+                  (at ?a ?c)
+                  (> (max-people ?a) (people ?a)))
  :effect (and  (not (at ?p ?c))
-               (in ?p ?a)))
+               (in ?p ?a)
+               (increase (people ?a) 1)))
 
 (:durative-action debark
  :parameters (?p - person ?a - aircraft ?c - city)
@@ -12,32 +14,35 @@
  :condition (and (in ?p ?a)
                  (at ?a ?c))
  :effect (and  (not (in ?p ?a))
-               (at ?p ?c)))
+               (at ?p ?c)
+               (decrease (people ?a) 1)))
 
-(:durative-action fly 
+(:durative-action fly
  :parameters (?a - aircraft ?c1 ?c2 - city)
  :duration (= ?duration (/ (distance ?c1 ?c2) (slow-speed ?a)))
  :condition (and  (at ?a ?c1)
-                  (>= (fuel ?a) 
+                  (>= (fuel ?a)
                          (* (distance ?c1 ?c2) (slow-burn ?a))))
  :effect (and  (not (at ?a ?c1))
                (at ?a ?c2)
-              (increase (total-fuel-used)
+              (increase (time-consumed ?a) (/ (distance ?c1 ?c2) (slow-speed ?a)))
+              (increase (total-fuel-used ?a)
                          (* (distance ?c1 ?c2) (slow-burn ?a)))
-              (decrease (fuel ?a) 
+              (decrease (fuel ?a)
                          (* (distance ?c1 ?c2) (slow-burn ?a)))))
-                                  
+
 (:durative-action zoom
  :parameters (?a - aircraft ?c1 ?c2 - city)
  :duration (= ?duration (/ (distance ?c1 ?c2) (fast-speed ?a)))
  :condition (and  (at ?a ?c1)
-                  (>= (fuel ?a) 
+                  (>= (fuel ?a)
                          (* (distance ?c1 ?c2) (fast-burn ?a))))
  :effect (and (not (at ?a ?c1))
                (at ?a ?c2)
-               (increase (total-fuel-used)
+               (increase (time-consumed ?a) (/ (distance ?c1 ?c2) (fast-speed ?a)))
+               (increase (total-fuel-used ?a)
                          (* (distance ?c1 ?c2) (fast-burn ?a)))
-              (decrease (fuel ?a) 
+              (decrease (fuel ?a)
                          (* (distance ?c1 ?c2) (fast-burn ?a)))))
 
 (:durative-action refuel
